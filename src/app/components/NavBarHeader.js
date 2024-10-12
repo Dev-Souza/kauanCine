@@ -19,9 +19,7 @@ export default function NavBarHeader(props) {
           </Nav>
         </Container>
       </Navbar>
-      <Container>
-        {props.children}
-      </Container>
+      {props.children}
     </>
   );
 }
