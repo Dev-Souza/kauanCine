@@ -21,7 +21,7 @@ export default function Page() {
 
     return (
         <Formik
-            initialValues={{ nome: '', cpf: '', celular: '', email: '', senha: '' }}
+            initialValues={{ nome: '', data_nascimento: '', cpf: '', celular: '', email: '', senha: '' }}
             onSubmit={values => salvar(values)}
         >
             {({
@@ -40,6 +40,16 @@ export default function Page() {
                             onChange={handleChange('nome')}
                         />
                     </Form.Group>
+                    <Form.Group className="mb-3" controlId="data_nascimento">
+                        <Form.Label>Data Nascimento:</Form.Label>
+                        <Form.Control
+                            type="date"
+                            placeholder="Digite seu data_nascimento"
+                            name="data_nascimento"
+                            value={values.data_nascimento}
+                            onChange={handleChange('nome')}
+                        />
+                    </Form.Group>
                     <Form.Group className="mb-3" controlId="cpf">
                         <Form.Label>CPF</Form.Label>
                         <Form.Control type="text"
@@ -51,7 +61,7 @@ export default function Page() {
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="celular">
                         <Form.Label>Celular</Form.Label>
-                        <Form.Control type="text"
+                        <Form.Control type="tel"
                             placeholder="Digite o seu número de telefone"
                             name="celular"
                             value={values.celular}
