@@ -26,7 +26,7 @@ export default function Page({ params }) {
         }
 
         localStorage.setItem('filmes', JSON.stringify(filmes))
-        return route.push('/filmes');
+        return route.push('/filme');
     }
 
     return (

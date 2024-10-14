@@ -52,9 +52,11 @@ export default function Page() {
                             <td>{item.duracao}</td>
                             <td>{item.genero}</td>
                             <td>{item.classificacao}</td>
-                            <td>{item.imagem_filme}</td>
                             <td>
-                                <Link href={`filmes/form/${item.id}`}>
+                                <img src={item.imagem_filme} />
+                            </td>
+                            <td>
+                                <Link href={`filme/form/${item.id}`}>
                                     <MdEdit title="Editar" className="text-primary" />
                                 </Link>
                                 <FaTrashAlt
