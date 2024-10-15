@@ -3,7 +3,7 @@
 import { Formik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FaCheck } from "react-icons/fa";
 import { FaAngleLeft } from "react-icons/fa";
@@ -35,7 +35,7 @@ export default function Page({ params }) {
         }
 
         localStorage.setItem('sessoes', JSON.stringify(sessoes))
-        return route.push('/sessao');
+        return route.push('/admin/sessao');
     }
 
     return (
@@ -71,7 +71,7 @@ export default function Page({ params }) {
                         <Form.Select
                             aria-label="Default select example"
                             name="filme"
-                            value={values.uf}
+                            value={values.filme}
                             onChange={handleChange('filme')}
                         >
                             <option value={''}>Selecione</option>
@@ -91,7 +91,7 @@ export default function Page({ params }) {
                         <Form.Select
                             aria-label="Default select example"
                             name="sala"
-                            value={values.uf}
+                            value={values.sala}
                             onChange={handleChange('sala')}
                         >
                             <option value={''}>Selecione</option>
