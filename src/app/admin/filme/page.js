@@ -26,7 +26,7 @@ export default function Page() {
 
     return (
         <>
-            <Link href={"/filmes/form"} className="btn btn-primary mb-3 mt-3">
+            <Link href={"/admin/filme/form"} className="btn btn-primary mb-3 mt-3">
                 <FaPlusCircle />Novo
             </Link>
 
