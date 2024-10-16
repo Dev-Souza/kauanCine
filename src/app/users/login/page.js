@@ -10,7 +10,7 @@ export default function Page() {
 
     function autenticar(dados) {
         if (dados.email === 'admin@gmail.com' && dados.senha === 'admin') {
-            alert('Acessou!');
+            route.push('/admin')
         }
         // Buscar os usuários salvos no localStorage
         const usuarios = JSON.parse(localStorage.getItem('users')) || [];
