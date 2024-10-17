@@ -29,9 +29,7 @@ export default function Page({ params }) {
     const sessoesFiltradas = sessaoDisponivelFilme.filter(item => item.data_sessao === dataSelecionada);
 
     function salvar(data) {
-        console.log(data)
-        alert(data.filmeBuscado.id)
-        route.push('/assentos');
+        route.push(`/assentos/${data.id_sessao}`);
     }
     return (
         <>
@@ -44,7 +42,7 @@ export default function Page({ params }) {
                     </Col>
                     <Col>
                         <Formik
-                            initialValues={{ data_sessao: '', horario_sessao_hidden: '', sala_hidden: '' }}
+                            initialValues={{ data_sessao: '' }}
                             onSubmit={values => salvar(values)}
                         >
                             {({
@@ -66,11 +64,17 @@ export default function Page({ params }) {
                                             }}
                                         >
                                             <option value={''}>Selecione</option>
-                                            {sessoesUnicas.map(item => (
-                                                <option key={item.id} value={item.data_sessao}>
-                                                    {new Date(item.data_sessao).toLocaleDateString('pt-BR')}
-                                                </option>
-                                            ))}
+                                            {sessoesUnicas.map(item => {
+                                                // Extrair ano, mês e dia da string da data (assumindo formato 'YYYY-MM-DD')
+                                                const [ano, mes, dia] = item.data_sessao.split('-');
+                                                const dataCorrigida = new Date(ano, mes - 1, dia); // Mês no JavaScript é zero-indexado
+
+                                                return (
+                                                    <option key={item.id} value={item.data_sessao}>
+                                                        {dataCorrigida.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
+                                                    </option>
+                                                );
+                                            })}
                                         </Form.Select>
                                     </Form.Group>
                                     {/* Renderizando as sessões filtradas */}
@@ -83,9 +87,7 @@ export default function Page({ params }) {
                                                     <Button
                                                         variant="primary"
                                                         onClick={() => {
-                                                            setFieldValue("horario_sessao_hidden", item.horario_sessao); // Captura o horário
-                                                            setFieldValue("sala_hidden", item.sala); // Captura o horário
-                                                            setFieldValue("filmeBuscado", filmeBuscado); // Captura o horário
+                                                            setFieldValue("id_sessao", item.id); // Captura o horário
                                                             handleSubmit(); // Chama o submit
                                                         }}
                                                     >
