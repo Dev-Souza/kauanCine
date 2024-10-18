@@ -21,9 +21,19 @@ export default function Page({ params }) {
 
         if (sala.id) {
             Object.assign(sala, dados)
+            Swal.fire({
+                title: "Sala alterada com sucesso!",
+                text: "A sala foi alterada no sistema",
+                icon: "success"
+              });
         } else {
             dados.id = v4()
             salas.push(dados)
+            Swal.fire({
+                title: "Sala cadastrada com sucesso!",
+                text: "A sala foi adicionada ao sistema",
+                icon: "success"
+              });
         }
 
         localStorage.setItem('salas', JSON.stringify(salas))

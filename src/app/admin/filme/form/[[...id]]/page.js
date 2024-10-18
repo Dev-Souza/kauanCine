@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button, Form } from "react-bootstrap";
 import { FaCheck } from "react-icons/fa";
 import { FaAngleLeft } from "react-icons/fa";
+import Swal from "sweetalert2";
 import { v4 } from "uuid";
 
 export default function Page({ params }) {
@@ -20,9 +21,19 @@ export default function Page({ params }) {
 
         if (filme.id) {
             Object.assign(filme, dados)
+            Swal.fire({
+                title: "Filme alterado com sucesso!",
+                text: "O filme foi alterado ao sistema",
+                icon: "success"
+              });
         } else {
             dados.id = v4()
             filmes.push(dados)
+            Swal.fire({
+                title: "Filme cadastrado com sucesso!",
+                text: "O filme foi adicionado ao sistema",
+                icon: "success"
+              });
         }
 
         localStorage.setItem('filmes', JSON.stringify(filmes))

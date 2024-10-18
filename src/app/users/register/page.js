@@ -4,6 +4,7 @@ import { Formik } from "formik";
 import { useRouter } from "next/navigation";
 import { Button, Form } from "react-bootstrap";
 import { FaCheck } from "react-icons/fa";
+import Swal from "sweetalert2";
 import { v4 } from "uuid";
 
 export default function Page() {
@@ -15,7 +16,11 @@ export default function Page() {
         dados.id = v4()
         users.push(dados)
         localStorage.setItem('users', JSON.stringify(users))
-        console.log(users);
+        Swal.fire({
+            title: "Usuário cadastrado com sucesso!",
+            text: "O usuário foi adicionado ao sistema",
+            icon: "success"
+          });
         return route.push('/users/login');
     }
 

@@ -29,9 +29,19 @@ export default function Page({ params }) {
 
         if (sessao.id) {
             Object.assign(sessao, dados)
+            Swal.fire({
+                title: "Sessão alterada com sucesso!",
+                text: "A sessão foi alterada no sistema",
+                icon: "success"
+              });
         } else {
             dados.id = v4()
             sessoes.push(dados)
+            Swal.fire({
+                title: "Sessão cadastrado com sucesso!",
+                text: "A sessão foi adicionada ao sistema",
+                icon: "success"
+              });
         }
 
         localStorage.setItem('sessoes', JSON.stringify(sessoes))

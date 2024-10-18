@@ -16,12 +16,27 @@ export default function Page() {
     }, [])
 
     function excluir(id) {
-        if (confirm('Deseja realmente excluir?')) {
-            //Pega todos que é diferente do id informado pelo o parametro
-            const dados = salas.filter(item => item.id != id)
-            localStorage.setItem('salas', JSON.stringify(dados))
-            setSalas(dados)
-        }
+        Swal.fire({
+            title: "Deseja realmente excluir?",
+            text: "Você não poderá reverter isso!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim, exclua-o!",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const dados = salas.filter(item => item.id != id)
+                localStorage.setItem('salas', JSON.stringify(dados))
+                setSalas(dados)
+                Swal.fire({
+                    title: "Deletado!",
+                    text: "Sala excluída com sucesso.",
+                    icon: "success"
+                });
+            }
+        });
     }
 
     return (
