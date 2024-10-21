@@ -5,6 +5,7 @@ import NavBarPadrao from "@/app/components/NavBarPadrao";
 import { Formik } from "formik";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useRouter } from "next/navigation";
+import Footer from "@/app/components/Footer";
 
 export default function Page({ params }) {
 
@@ -31,14 +32,15 @@ export default function Page({ params }) {
     function salvar(data) {
         route.push(`/assentos/${data.id_sessao}`);
     }
+
     return (
-        <>
+        <Container className="d-flex flex-column min-vh-100">
             <NavBarPadrao caminho="/" />
-            <Container>
+            <Container fluid className="flex-grow-1">
                 <h1>{filmeBuscado.titulo}</h1>
                 <Row>
                     <Col>
-                        <img src={filmeBuscado.imagem_filme} alt={filmeBuscado.titulo} />
+                        <img src={filmeBuscado.imagem_filme} alt={filmeBuscado.titulo} className="img-fluid" />
                     </Col>
                     <Col>
                         <Formik
@@ -105,6 +107,7 @@ export default function Page({ params }) {
                     </Col>
                 </Row>
             </Container>
-        </>
+            <Footer />
+        </Container>
     );
 }
