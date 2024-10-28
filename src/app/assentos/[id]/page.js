@@ -1,5 +1,6 @@
 'use client';
 
+import Footer from "@/app/components/Footer";
 import NavBarPadrao from "@/app/components/NavBarPadrao";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,18 +23,18 @@ export default function Page({ params }) {
     const [selecionado, setSelecionado] = useState([]);
     const [bloqueadas, setBloqueadas] = useState([]);
 
-    // Carrega as poltronas bloqueadas do localStorage ao carregar a página
+    // Carrega as poltronas bloqueadas
     useEffect(() => {
-        const bloqueadasLocalStorage = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
-        setBloqueadas(bloqueadasLocalStorage);
+        const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
+        setBloqueadas(poltronasBloqueadas);
     }, []);
 
     const handleSelect = (poltronaCompleta) => {
         // Alterna a seleção
-        setSelecionado((prev) =>
-            prev.includes(poltronaCompleta)
-                ? prev.filter(item => item !== poltronaCompleta)
-                : [...prev, poltronaCompleta]
+        setSelecionado((item) =>
+            item.includes(poltronaCompleta)
+                ? item.filter(item => item !== poltronaCompleta)
+                : [...item, poltronaCompleta]
         );
     };
 
@@ -42,7 +43,7 @@ export default function Page({ params }) {
         setSelecionado([]);
     }
 
-    const handleComprarIngresso = () => {
+    const comprarIngresso = () => {
         // Adiciona as poltronas selecionadas às bloqueadas
         const novasBloqueadas = [...bloqueadas, ...selecionado];
 
@@ -66,7 +67,7 @@ export default function Page({ params }) {
             <NavBarPadrao caminho="/"></NavBarPadrao>
             <Container style={{ maxWidth: '1000px' }} className="mt-4">
 
-                <Row style={{ maxWidth: '1000px' }}>
+                <Row style={{ maxWidth: '1000px' }} className="mb-3">
                     <Col md={2}>
                         <img src={filmeBuscado.imagem_filme} style={{ width: '100%', height: 'auto' }} alt={filmeBuscado.titulo} />
                     </Col>
@@ -77,7 +78,7 @@ export default function Page({ params }) {
                                     <h2>{filmeBuscado.titulo}</h2>
                                 </Col>
                                 <Col md={3}>
-                                    <button onClick={handleComprarIngresso} className="btn btn-success">
+                                    <button onClick={comprarIngresso} className="btn btn-success">
                                         Comprar Ingresso <GoArrowRight />
                                     </button>
                                 </Col>
@@ -88,10 +89,11 @@ export default function Page({ params }) {
                 </Row>
 
                 <div className="bg-white" style={{ padding: '20px 15px' }}>
+                    {selecionado.length > 0 && <h3>Assentos Selecionados: {selecionado}</h3>}
                     <Table striped hover size="sm" className="text-center">
                         <tbody>
-                            {fileiras.map((fileira, rowIndex) => (
-                                <tr key={rowIndex}>
+                            {fileiras.map((fileira, index) => (
+                                <tr key={index}>
                                     <td style={{ fontWeight: 'bold', verticalAlign: 'middle' }}>{fileira}</td>
                                     <td>
                                         <Row className="d-flex justify-content-center">
@@ -150,6 +152,7 @@ export default function Page({ params }) {
                     <Button className="btn btn-danger" onClick={limparSelecao}>Limpar selecionados</Button>
                 </div>
             </Container>
+            <Footer></Footer>
         </>
     );
 }
