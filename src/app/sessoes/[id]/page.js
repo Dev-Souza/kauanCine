@@ -34,9 +34,9 @@ export default function Page({ params }) {
     }
 
     return (
-        <Container className="d-flex flex-column min-vh-100">
+        <>
             <NavBarPadrao caminho="/" />
-            <Container fluid className="flex-grow-1">
+            <Container>
                 <h1>{filmeBuscado.titulo}</h1>
                 <Row>
                     <Col>
@@ -108,6 +108,7 @@ export default function Page({ params }) {
                 </Row>
             </Container>
             <Footer />
-        </Container>
+
+        </>
     );
 }
