@@ -56,11 +56,13 @@ export default function Page({ params }) {
 
     return (
         <>
-            <style jsx global>{`
+            <style jsx global>{
+                `
                 body {
                     background-color: #f0f0f0;
                 }
-            `}</style>
+                    `
+            }</style>
             <NavBarPadrao caminho="/"></NavBarPadrao>
             <Container style={{ maxWidth: '1000px' }} className="mt-4">
 
