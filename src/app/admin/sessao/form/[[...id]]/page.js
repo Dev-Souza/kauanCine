@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FaCheck } from "react-icons/fa";
 import { FaAngleLeft } from "react-icons/fa";
+import Swal from "sweetalert2";
 import { v4 } from "uuid";
 
 export default function Page({ params }) {
