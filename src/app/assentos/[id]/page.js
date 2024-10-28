@@ -4,7 +4,7 @@ import NavBarPadrao from "@/app/components/NavBarPadrao";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from 'react';
-import { Col, Container, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import { GoArrowRight } from "react-icons/go";
 
 export default function Page({ params }) {
@@ -36,6 +36,11 @@ export default function Page({ params }) {
                 : [...prev, poltronaCompleta]
         );
     };
+
+    function limparSelecao(){
+        //Limpa as que foram selecionadas
+        setSelecionado([]);
+    }
 
     const handleComprarIngresso = () => {
         // Adiciona as poltronas selecionadas às bloqueadas
@@ -140,6 +145,7 @@ export default function Page({ params }) {
                             ))}
                         </tbody>
                     </Table>
+                    <Button className="btn btn-danger" onClick={limparSelecao}>Limpar selecionados</Button>
                 </div>
             </Container>
         </>
