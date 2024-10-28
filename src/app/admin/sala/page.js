@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Table } from "react-bootstrap";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaAngleLeft, FaPlusCircle } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { FaTrashAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
@@ -44,14 +44,13 @@ export default function Page() {
             <Link href={"/admin/sala/form"} className="btn btn-primary mb-3 mt-3">
                 <FaPlusCircle />Novo
             </Link>
-
+            <Link href={"/admin"} className="btn btn-danger"><FaAngleLeft />Tela Admin</Link>
             <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
                         <th>Tipo Sala</th>
-                        <th>Capacidade</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,7 +59,6 @@ export default function Page() {
                             <td>{i + 1}</td>
                             <td>{item.nome}</td>
                             <td>{item.tipo_sala}</td>
-                            <td>{item.capacidade}</td>
                             <td>
                                 <Link href={`/admin/sala/form/${item.id}`}>
                                     <MdEdit title="Editar" className="text-primary" />

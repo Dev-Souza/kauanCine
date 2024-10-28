@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Table } from "react-bootstrap";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaAngleLeft, FaPlusCircle } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { FaTrashAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
@@ -45,6 +45,7 @@ export default function Page() {
             <Link href={"/admin/filme/form"} className="btn btn-primary mb-3 mt-3">
                 <FaPlusCircle />Novo
             </Link>
+            <Link href={"/admin"} className="btn btn-danger"><FaAngleLeft />Tela Admin</Link>
 
             <Table striped bordered hover>
                 <thead>
