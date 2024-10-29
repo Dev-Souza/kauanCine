@@ -10,7 +10,7 @@ import NavBarPadrao from "../components/NavBarPadrao";
 export default function Page() {
     return (
         <>
-            <NavBarPadrao></NavBarPadrao>
+            <NavBarPadrao caminho="/"></NavBarPadrao>
             <Container className="mt-5">
                 <h1 className="text-center mb-4">Administração</h1>
                 <Row className="g-4">
