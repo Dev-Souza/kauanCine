@@ -23,35 +23,46 @@ export default function Page({ params }) {
     const [selecionado, setSelecionado] = useState([]);
     const [bloqueadas, setBloqueadas] = useState([]);
 
-    // Carrega as poltronas bloqueadas
+    // Carrega as poltronas bloqueadas da sessão atual
     useEffect(() => {
         const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
-        setBloqueadas(poltronasBloqueadas);
-    }, []);
+        const sessaoAtual = poltronasBloqueadas.find(item => item.id === sessaoBuscada.id);
 
-    const handleSelect = (poltronaCompleta) => {
+        setBloqueadas(sessaoAtual.poltronas || []);
+    }, [sessaoBuscada]);
+
+    const selecionarPoltrona = (poltronaCompleta) => {
         // Alterna a seleção
-        setSelecionado((item) =>
-            item.includes(poltronaCompleta)
-                ? item.filter(item => item !== poltronaCompleta)
-                : [...item, poltronaCompleta]
-        );
+        setSelecionado((item) => item.includes(poltronaCompleta) ? item.filter(item => item !== poltronaCompleta) : [...item, poltronaCompleta]);
     };
 
-    function limparSelecao(){
+    function limparSelecao() {
         //Limpa as que foram selecionadas
         setSelecionado([]);
     }
 
     const comprarIngresso = () => {
-        // Adiciona as poltronas selecionadas às bloqueadas
-        const novasBloqueadas = [...bloqueadas, ...selecionado];
+        // Buscar poltronas bloqueadas
+        const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
 
-        // Atualiza o estado e salva no localStorage
-        setBloqueadas(novasBloqueadas);
-        localStorage.setItem('poltronas_bloqueadas', JSON.stringify(novasBloqueadas));
+        // Sessão atual
+        const sessaoExistente = poltronasBloqueadas.find(sessao => sessao.id === sessaoBuscada.id);
 
-        // Limpa a seleção após a compra
+        if (sessaoExistente) {
+            //Se essa sessão ja existe, adione a ela
+            sessaoExistente.poltronas.push(...selecionado);
+        } else {
+            //Se não existir crie uma nova
+            poltronasBloqueadas.push({
+                id: sessaoBuscada.id,
+                poltronas: selecionado
+            });
+        }
+
+        setBloqueadas(poltronasBloqueadas);
+        localStorage.setItem('poltronas_bloqueadas', JSON.stringify(poltronasBloqueadas));
+
+        //Limpar seleção
         setSelecionado([]);
     };
 
@@ -106,15 +117,15 @@ export default function Page({ params }) {
                                                     <React.Fragment key={index}>
                                                         <Col xs="auto" className="p-1">
                                                             <div
-                                                                onClick={!isBloqueada ? () => handleSelect(poltronaCompleta) : undefined}
+                                                                onClick={!isBloqueada ? () => selecionarPoltrona(poltronaCompleta) : undefined}
                                                                 style={{
                                                                     width: '40px',
                                                                     height: '40px',
                                                                     backgroundColor: isBloqueada
                                                                         ? 'gray'
                                                                         : isSelecionada
-                                                                        ? 'lightgray'
-                                                                        : 'green',
+                                                                            ? 'lightgray'
+                                                                            : 'green',
                                                                     color: 'white',
                                                                     display: 'flex',
                                                                     justifyContent: 'center',
@@ -149,7 +160,7 @@ export default function Page({ params }) {
                             ))}
                         </tbody>
                     </Table>
-                    <Button className="btn btn-danger" onClick={limparSelecao}>Limpar selecionados</Button>
+                    <Button className="btn btn-primary" onClick={limparSelecao}>Limpar Seleção</Button>
                 </div>
             </Container>
             <Footer></Footer>
