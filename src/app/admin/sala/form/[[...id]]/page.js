@@ -16,7 +16,7 @@ export default function Page({ params }) {
 
     const salas = JSON.parse(localStorage.getItem('salas')) || []
     const dados = salas.find(item => item.id == params.id)
-    const sala = dados || { nome: '', tipo_sala: '', capacidade: ''}
+    const sala = dados || { nome: '', tipo_sala: '' }
 
     function salvar(dados) {
 
@@ -26,7 +26,7 @@ export default function Page({ params }) {
                 title: "Sala alterada com sucesso!",
                 text: "A sala foi alterada no sistema",
                 icon: "success"
-              });
+            });
         } else {
             dados.id = v4()
             salas.push(dados)
@@ -34,7 +34,7 @@ export default function Page({ params }) {
                 title: "Sala cadastrada com sucesso!",
                 text: "A sala foi adicionada ao sistema",
                 icon: "success"
-              });
+            });
         }
 
         localStorage.setItem('salas', JSON.stringify(salas))
@@ -50,6 +50,7 @@ export default function Page({ params }) {
                 values,
                 handleChange,
                 handleSubmit,
+                errors
             }) => (
                 <Form className="mt-3">
                     <Form.Group className="mb-3" controlId="nome">
@@ -63,19 +64,17 @@ export default function Page({ params }) {
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="tipo_sala">
                         <Form.Label>Tipo da sala</Form.Label>
-                        <Form.Control type="text"
+                        <Form.Select
+                            aria-label="Default select example"
                             name="tipo_sala"
                             value={values.tipo_sala}
                             onChange={handleChange('tipo_sala')}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="capacidade">
-                        <Form.Label>Capacidade</Form.Label>
-                        <Form.Control type="number"
-                            name="capacidade"
-                            value={values.capacidade}
-                            onChange={handleChange('capacidade')}
-                        />
+                            isInvalid={!!errors.tipo_sala && touched.tipo_sala}
+                        >
+                            <option value={''}>Selecione</option>
+                            <option value='2D'>2D</option>
+                            <option value='3D'>3D</option>
+                        </Form.Select>
                     </Form.Group>
                     <div className="text-center">
                         <Link href={"/sala"} className="btn btn-primary"><FaAngleLeft />Voltar</Link>

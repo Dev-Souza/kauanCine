@@ -11,7 +11,7 @@ export default function Page() {
 
     function autenticar(dados) {
         if (dados.email === 'admin' && dados.senha === 'admin') {
-            route.push('/admin')
+            return route.push('/admin')
         }
         // Buscar os usuários salvos no localStorage
         const usuarios = JSON.parse(localStorage.getItem('users')) || [];
