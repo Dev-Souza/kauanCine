@@ -1,5 +1,6 @@
 'use client'
 
+import { UsersValidator } from "@/app/validators/UsersValidator";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
 import { Button, Form } from "react-bootstrap";
@@ -21,19 +22,22 @@ export default function Page() {
             title: "Usuário cadastrado com sucesso!",
             text: "O usuário foi adicionado ao sistema",
             icon: "success"
-          });
+        });
         return route.push('/users/login');
     }
 
     return (
         <Formik
             initialValues={{ nome: '', data_nascimento: '', cpf: '', celular: '', email: '', senha: '' }}
+            validationSchema={UsersValidator}
             onSubmit={values => salvar(values)}
         >
             {({
                 values,
                 handleChange,
                 handleSubmit,
+                errors,
+                touched
             }) => {
 
                 //Máscara do meu CPF
@@ -52,7 +56,11 @@ export default function Page() {
                                 name="nome"
                                 value={values.nome}
                                 onChange={handleChange('nome')}
+                                isInvalid={touched.nome && !!errors.nome}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.nome}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="data_nascimento">
                             <Form.Label>Data Nascimento:</Form.Label>
@@ -61,7 +69,11 @@ export default function Page() {
                                 name="data_nascimento"
                                 value={values.data_nascimento}
                                 onChange={handleChange('data_nascimento')}
+                                isInvalid={touched.data_nascimento && !!errors.data_nascimento}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.data_nascimento}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="cpf">
                             <Form.Label>CPF</Form.Label>
@@ -70,7 +82,11 @@ export default function Page() {
                                 name="cpf"
                                 value={values.cpf}
                                 onChange={handleChange('cpf')}
+                                isInvalid={touched.cpf && !!errors.cpf}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.cpf}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="celular">
                             <Form.Label>Celular</Form.Label>
@@ -79,7 +95,11 @@ export default function Page() {
                                 name="celular"
                                 value={values.celular}
                                 onChange={handleChange('celular')}
+                                isInvalid={touched.celular && !!errors.celular}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.celular}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="email">
                             <Form.Label>Email</Form.Label>
@@ -88,7 +108,11 @@ export default function Page() {
                                 name="email"
                                 value={values.email}
                                 onChange={handleChange('email')}
+                                isInvalid={touched.email && !!errors.email}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.email}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="senha">
                             <Form.Label>Senha</Form.Label>
@@ -97,7 +121,11 @@ export default function Page() {
                                 name="senha"
                                 value={values.senha}
                                 onChange={handleChange('senha')}
+                                isInvalid={touched.senha && !!errors.senha}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.senha}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <div className="text-center">
                             <Button variant="success" className="ms-1" onClick={handleSubmit}>
