@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FaCheck } from "react-icons/fa";
 import { FaAngleLeft } from "react-icons/fa";
+import Swal from "sweetalert2";
 import { v4 } from "uuid";
 
 export default function Page({ params }) {
@@ -29,9 +30,19 @@ export default function Page({ params }) {
 
         if (sessao.id) {
             Object.assign(sessao, dados)
+            Swal.fire({
+                title: "Sessão alterada com sucesso!",
+                text: "A sessão foi alterada no sistema",
+                icon: "success"
+              });
         } else {
             dados.id = v4()
             sessoes.push(dados)
+            Swal.fire({
+                title: "Sessão cadastrado com sucesso!",
+                text: "A sessão foi adicionada ao sistema",
+                icon: "success"
+              });
         }
 
         localStorage.setItem('sessoes', JSON.stringify(sessoes))

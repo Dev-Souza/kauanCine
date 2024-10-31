@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { Table } from "react-bootstrap";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaAngleLeft, FaPlusCircle } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { FaTrashAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 export default function Page() {
 
@@ -16,12 +17,27 @@ export default function Page() {
     }, [])
 
     function excluir(id) {
-        if (confirm('Deseja realmente excluir?')) {
-            //Pega todos que é diferente do id informado pelo o parametro
-            const dados = sessoes.filter(item => item.id != id)
-            localStorage.setItem('sessoes', JSON.stringify(dados))
-            setSessoes(dados)
-        }
+        Swal.fire({
+            title: "Deseja realmente excluir?",
+            text: "Você não poderá reverter isso!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim, exclua-o!",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const dados = sessoes.filter(item => item.id != id)
+                localStorage.setItem('sessoes', JSON.stringify(dados))
+                setSessoes(dados)
+                Swal.fire({
+                    title: "Deletado!",
+                    text: "Sessão excluída com sucesso.",
+                    icon: "success"
+                });
+            }
+        });
     }
 
     return (
@@ -29,6 +45,7 @@ export default function Page() {
             <Link href={"/admin/sessao/form"} className="btn btn-primary mb-3 mt-3">
                 <FaPlusCircle />Novo
             </Link>
+            <Link href={"/admin"} className="btn btn-danger"><FaAngleLeft />Tela Admin</Link>
 
             <Table striped bordered hover>
                 <thead>
