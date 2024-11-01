@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Button, Card, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import { GoArrowRight, GoLocation } from "react-icons/go";
 import { MdOutlineChair, MdCalendarToday, MdAccessTime, MdAttachMoney } from "react-icons/md";
+import Swal from "sweetalert2";
 
 export default function Page({ params }) {
 
@@ -42,9 +43,33 @@ export default function Page({ params }) {
                 poltronas: poltronasPreSelecionadas
             });
         }
-        localStorage.setItem('poltronas_bloqueadas', JSON.stringify(poltronasBloqueadas));  
+        localStorage.setItem('poltronas_bloqueadas', JSON.stringify(poltronasBloqueadas));
 
-        alert('Assento reservado!')
+        //Parte para salvar as informações da compra
+        const pagamentos = {
+            valorTotalCompra: valorTotal,
+            filme: filmeBuscado.id,
+            sessao: sessaoBuscada.id,
+            poltronas: poltronasPreSelecionadas,
+            dataCompra: new Date().toLocaleString('pt-BR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }), 
+        };
+
+        //salvando no localStorage
+        localStorage.setItem('pagamentos', JSON.stringify(pagamentos))
+
+        Swal.fire({
+            title: "Assento reservado com sucesso!",
+            text: "Mais informações foram mandadas para seu email",
+            icon: "success"
+        });
     }
 
     const atualizarValorTotal = (novoValorIngresso, assento) => {
@@ -62,7 +87,7 @@ export default function Page({ params }) {
                     background-color: #f0f0f0;
                 }
             `}</style>
-            <NavBarPadrao caminho="/"/>
+            <NavBarPadrao caminho="/" />
             <Container style={{ maxWidth: '1000px' }} className="mt-4">
                 <h1>Pagamento de Ingressos</h1>
                 <Row>
