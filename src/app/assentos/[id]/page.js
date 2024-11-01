@@ -11,9 +11,10 @@ import { GoArrowRight } from "react-icons/go";
 export default function Page({ params }) {
 
     const route = useRouter();
-
-    const sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
-    const sessaoBuscada = sessoes.find(item => item.id == params.id);
+    const sessaoBuscada = React.useMemo(() => {
+        const sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
+        return sessoes.find(item => item.id == params.id);
+    }, [params.id]);
     const filmes = JSON.parse(localStorage.getItem('filmes'));
     const filmeBuscado = filmes.find(item => item.titulo == sessaoBuscada?.filme);
 
@@ -25,10 +26,11 @@ export default function Page({ params }) {
 
     // Carrega as poltronas bloqueadas da sessão atual
     useEffect(() => {
+        console.log('Sessao buscada:', sessaoBuscada);
         const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
-        const sessaoAtual = poltronasBloqueadas.find(item => item.id === sessaoBuscada.id);
+        const sessaoAtual = poltronasBloqueadas.find(item => item.id === sessaoBuscada?.id);
 
-        setBloqueadas(sessaoAtual.poltronas || []);
+        setBloqueadas(sessaoAtual?.poltronas || []);
     }, [sessaoBuscada]);
 
     const selecionarPoltrona = (poltronaCompleta) => {
@@ -41,18 +43,25 @@ export default function Page({ params }) {
         setSelecionado([]);
     }
 
-    const comprarIngresso = () => {
-        // Buscar poltronas bloqueadas
+    //Pré selecionar as poltronas
+    function comprarIngresso() {
+        const poltronasPreSelecionadas = selecionado;
+        localStorage.setItem('poltronas_pre_selecionadas', JSON.stringify(poltronasPreSelecionadas));
+        route.push(`/pagamentos/${sessaoBuscada.id}`);
+    }
+
+    const comprarIngressoooooo = () => {
+        //Buscar poltronas bloqueadas
         const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
 
-        // Sessão atual
+        //Sessão atual
         const sessaoExistente = poltronasBloqueadas.find(sessao => sessao.id === sessaoBuscada.id);
 
         if (sessaoExistente) {
-            //Se essa sessão ja existe, adione a ela
+            // Se essa sessão ja existe, adione a ela
             sessaoExistente.poltronas.push(...selecionado);
         } else {
-            //Se não existir crie uma nova
+            // Se não existir crie uma nova
             poltronasBloqueadas.push({
                 id: sessaoBuscada.id,
                 poltronas: selecionado
@@ -62,7 +71,7 @@ export default function Page({ params }) {
         setBloqueadas(poltronasBloqueadas);
         localStorage.setItem('poltronas_bloqueadas', JSON.stringify(poltronasBloqueadas));
 
-        //Limpar seleção
+        // Limpar seleção
         setSelecionado([]);
     };
 
@@ -87,13 +96,15 @@ export default function Page({ params }) {
                             <Row>
                                 <Col md={9}>
                                     <h2>{filmeBuscado.titulo}</h2>
+                                    <p>{sessaoBuscada.sala} - {sessaoBuscada.horario_sessao}</p>
+                                    <Link href={`/sessoes/${filmeBuscado.id}`} className="btn btn-warning">Trocar sessão</Link>
                                 </Col>
                                 <Col md={3}>
                                     <button onClick={comprarIngresso} className="btn btn-success">
                                         Comprar Ingresso <GoArrowRight />
                                     </button>
                                 </Col>
-                                <p>{sessaoBuscada.sala} - {sessaoBuscada.horario_sessao}</p><br />
+
                             </Row>
                         </div>
                     </Col>
