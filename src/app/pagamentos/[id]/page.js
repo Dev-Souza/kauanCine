@@ -1,16 +1,15 @@
-'use client'
+'use client';
 
 import Footer from "@/app/components/Footer";
 import NavBarPadrao from "@/app/components/NavBarPadrao";
 import { Formik } from "formik";
-import { useState, useEffect } from "react";
-import { Col, Container, Form, InputGroup, Row } from "react-bootstrap";
-import { GoArrowRight } from "react-icons/go";
-import { MdOutlineChair } from "react-icons/md";
+import { useState } from "react";
+import { Button, Card, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
+import { GoArrowRight, GoLocation } from "react-icons/go";
+import { MdOutlineChair, MdCalendarToday, MdAccessTime, MdAttachMoney } from "react-icons/md";
 
 export default function Page({ params }) {
 
-    // Inicia o estado valoresIngressos com 32 para cada poltrona
     const poltronasPreSelecionadas = JSON.parse(localStorage.getItem('poltronas_pre_selecionadas')) || [];
     const valoresInicializados = poltronasPreSelecionadas.reduce((acc, item) => {
         acc[item] = 32; // Define "Inteira" como padrão
@@ -27,7 +26,25 @@ export default function Page({ params }) {
     const filmeBuscado = filmes.find(item => item.titulo == sessaoBuscada.filme);
 
     function comprarIngresso() {
-        alert('Compra realizada com sucesso!')
+        //Buscar poltronas bloqueadas
+        const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
+
+        //Sessão atual
+        const sessaoExistente = poltronasBloqueadas.find(sessao => sessao.id === sessaoBuscada.id);
+
+        if (sessaoExistente) {
+            // Se essa sessão ja existe, adione a ela
+            sessaoExistente.poltronas.push(...poltronasPreSelecionadas);
+        } else {
+            // Se não existir crie uma nova
+            poltronasBloqueadas.push({
+                id: sessaoBuscada.id,
+                poltronas: poltronasPreSelecionadas
+            });
+        }
+        localStorage.setItem('poltronas_bloqueadas', JSON.stringify(poltronasBloqueadas));  
+
+        alert('Assento reservado!')
     }
 
     const atualizarValorTotal = (novoValorIngresso, assento) => {
@@ -45,91 +62,89 @@ export default function Page({ params }) {
                     background-color: #f0f0f0;
                 }
             `}</style>
-            <NavBarPadrao />
+            <NavBarPadrao caminho="/"/>
             <Container style={{ maxWidth: '1000px' }} className="mt-4">
-                <h1>Pagamentos</h1>
+                <h1>Pagamento de Ingressos</h1>
                 <Row>
                     <Col md={8}>
-                        <Row style={{ maxWidth: '1000px' }} className="mb-3">
-                            <Col md={3}>
-                                <img src={filmeBuscado.imagem_filme} style={{ width: '100%', height: 'auto' }} alt={filmeBuscado.titulo} />
-                            </Col>
-                            <Col md={9}>
-                                <div className="mb-3 bg-white" style={{ padding: '20px 15px', width: '100%' }}>
-                                    <Row>
-                                        <Col md={9}>
-                                            <h2>{filmeBuscado.titulo}</h2>
-                                            <p><b>Data:</b> {sessaoBuscada.data_sessao}<br /> {sessaoBuscada.sala} - {sessaoBuscada.horario_sessao}</p>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            </Col>
-                        </Row>
-                        <div className="bg-white" style={{ padding: '20px 15px' }}>
-                            <h2 className="fs-5">Escolha tipo de ingresso</h2>
-                            <Formik
-                                initialValues={{ tipo_ingresso: '' }}
-                                onSubmit={values => salvar(values)}
-                            >
-                                {({
-                                    values,
-                                    handleChange,
-                                    setFieldValue,
-                                    handleSubmit,
-                                }) => {
-                                    const calcularIngresso = (campo, e, assento) => {
-                                        let valorIngresso = e.target.value === 'ESTUDANTE' || e.target.value === 'MEIA' ? 16 : 32;
+                        <Card className="mb-3 ">
+                            <Row className="p-3">
+                                <Col md={3}>
+                                    <Card.Img src={filmeBuscado.imagem_filme} alt={filmeBuscado.titulo} />
+                                </Col>
+                                <Col md={9}>
+                                    <Card.Body>
+                                        <Card.Title as={'h3'}>{filmeBuscado.titulo}</Card.Title>
+                                        <Card.Text>
+                                            <MdCalendarToday className="text-primary me-1" /> <b>Data:</b> {sessaoBuscada.data_sessao} <br />
+                                            <MdAccessTime className="text-primary me-1" /> <b>Horário:</b> {sessaoBuscada.horario_sessao} <br />
+                                            <GoLocation className="text-primary me-1" /> <b>Sala:</b> {sessaoBuscada.sala}
+                                        </Card.Text>
+                                    </Card.Body>
+                                </Col>
+                            </Row>
+                        </Card>
+                        <Card className="bg-white  p-3">
+                            <Card.Body>
+                                <Card.Title as="h3">Escolha o tipo de ingresso</Card.Title>
+                                <Formik
+                                    initialValues={{ tipo_ingresso: '' }}
+                                    onSubmit={values => salvar(values)}
+                                >
+                                    {({
+                                        values,
+                                        handleChange,
+                                        setFieldValue,
+                                    }) => {
+                                        const calcularIngresso = (campo, e, assento) => {
+                                            let valorIngresso = e.target.value === 'ESTUDANTE' || e.target.value === 'MEIA' ? 16 : 32;
+                                            atualizarValorTotal(valorIngresso, assento);
+                                            setFieldValue(campo, e.target.value);
+                                        };
 
-                                        atualizarValorTotal(valorIngresso, assento);
-                                        setFieldValue(campo, e.target.value);
-                                    };
-
-                                    return (
-                                        <Form className="mt-3">
-                                            {poltronasPreSelecionadas.map((item) => (
-                                                <Form.Group className="mb-3" controlId={`tipo_ingresso_${item}`} key={item}>
-                                                    <InputGroup>
-                                                        <InputGroup.Text>
-                                                            <MdOutlineChair style={{ fontSize: '2em', color: 'green' }} /> {item}
-                                                        </InputGroup.Text>
-                                                        <Form.Select
-                                                            aria-label="Selecione a data da sessão"
-                                                            name={`tipo_ingresso_${item}`}
-                                                            value={values[`tipo_ingresso_${item}`] || 'INTEIRA'}
-                                                            onChange={(e) => calcularIngresso(`tipo_ingresso_${item}`, e, item)}
-                                                        >
-                                                            <option value={'INTEIRA'}>Inteira - R$ 32</option>
-                                                            <option value={'ESTUDANTE'}>Estudante - PROMOCIONAL - R$ 16</option>
-                                                            <option value={'MEIA'}>Meia - PROMOCIONAL - R$ 16</option>
-                                                        </Form.Select>
-                                                    </InputGroup>
-                                                </Form.Group>
-                                            ))}
-                                        </Form>
-                                    );
-                                }}
-                            </Formik>
-                        </div>
+                                        return (
+                                            <Form className="mt-3">
+                                                {poltronasPreSelecionadas.map((item) => (
+                                                    <Form.Group className="mb-3" controlId={`tipo_ingresso_${item}`} key={item}>
+                                                        <InputGroup>
+                                                            <InputGroup.Text>
+                                                                <MdOutlineChair style={{ fontSize: '2em', color: 'green' }} /> {item}
+                                                            </InputGroup.Text>
+                                                            <Form.Select
+                                                                aria-label="Selecione o tipo de ingresso"
+                                                                name={`tipo_ingresso_${item}`}
+                                                                value={values[`tipo_ingresso_${item}`] || 'INTEIRA'}
+                                                                onChange={(e) => calcularIngresso(`tipo_ingresso_${item}`, e, item)}
+                                                            >
+                                                                <option value={'INTEIRA'}>Inteira - R$ 32</option>
+                                                                <option value={'ESTUDANTE'}>Estudante - PROMOCIONAL - R$ 16</option>
+                                                                <option value={'MEIA'}>Meia - PROMOCIONAL - R$ 16</option>
+                                                            </Form.Select>
+                                                        </InputGroup>
+                                                    </Form.Group>
+                                                ))}
+                                            </Form>
+                                        );
+                                    }}
+                                </Formik>
+                            </Card.Body>
+                        </Card>
                     </Col>
                     <Col>
-                        <div className="bg-white">
-                            <div style={{ padding: '15px 10px 15px 10px' }}>
-                                <h2 className="fs-5">Resumo do Pedido</h2>
-                                <p><b>Ingressos:</b> {poltronasPreSelecionadas.length}</p>
-                                <p><b>Total:</b> R$ {valorTotal}</p>
+                        <Card className="bg-white  p-3">
+                            <Card.Body>
+                                <Card.Title as="h3">Resumo do Pedido</Card.Title>
+                                <Card.Text><MdOutlineChair className="text-primary me-1" /> <b>Ingressos:</b> {poltronasPreSelecionadas.length}</Card.Text>
+                                <Card.Text><MdAttachMoney className="text-primary me-1" /> <b>Total:</b> R$ {valorTotal}</Card.Text>
                                 <hr />
-
-                                <h5 className="fs-6">CineKauan</h5>
-                                <span className="mt-1">QN0 34, AREA ESPECIAL 21 A: KauanLândia <br />
-                                    Brasília - Distrito Federal</span>
-
+                                <h5>CineKauan</h5>
+                                <span>QN0 34, AREA ESPECIAL 21 A: KauanLândia <br /> Brasília - Distrito Federal</span>
                                 <hr />
-
-                                <button onClick={comprarIngresso} className="btn btn-success">
+                                <Button onClick={comprarIngresso} className="btn-purchase w-100">
                                     Comprar Ingresso <GoArrowRight />
-                                </button>
-                            </div>
-                        </div>
+                                </Button>
+                            </Card.Body>
+                        </Card>
                     </Col>
                 </Row>
             </Container>
