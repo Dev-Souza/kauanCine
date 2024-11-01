@@ -5,8 +5,9 @@ import NavBarPadrao from "@/app/components/NavBarPadrao";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
-import { GoArrowRight } from "react-icons/go";
+import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
+import { GoArrowRight, GoLocation } from "react-icons/go";
+import { MdAccessTime, MdCalendarToday } from "react-icons/md";
 
 export default function Page({ params }) {
 
@@ -43,37 +44,13 @@ export default function Page({ params }) {
         setSelecionado([]);
     }
 
+
     //Pré selecionar as poltronas
     function comprarIngresso() {
         const poltronasPreSelecionadas = selecionado;
         localStorage.setItem('poltronas_pre_selecionadas', JSON.stringify(poltronasPreSelecionadas));
         route.push(`/pagamentos/${sessaoBuscada.id}`);
     }
-
-    const comprarIngressoooooo = () => {
-        //Buscar poltronas bloqueadas
-        const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
-
-        //Sessão atual
-        const sessaoExistente = poltronasBloqueadas.find(sessao => sessao.id === sessaoBuscada.id);
-
-        if (sessaoExistente) {
-            // Se essa sessão ja existe, adione a ela
-            sessaoExistente.poltronas.push(...selecionado);
-        } else {
-            // Se não existir crie uma nova
-            poltronasBloqueadas.push({
-                id: sessaoBuscada.id,
-                poltronas: selecionado
-            });
-        }
-
-        setBloqueadas(poltronasBloqueadas);
-        localStorage.setItem('poltronas_bloqueadas', JSON.stringify(poltronasBloqueadas));
-
-        // Limpar seleção
-        setSelecionado([]);
-    };
 
     return (
         <>
@@ -95,12 +72,18 @@ export default function Page({ params }) {
                         <div className="mb-3 bg-white" style={{ padding: '20px 15px', width: '100%' }}>
                             <Row>
                                 <Col md={9}>
-                                    <h2>{filmeBuscado.titulo}</h2>
-                                    <p>{sessaoBuscada.sala} - {sessaoBuscada.horario_sessao}</p>
-                                    <Link href={`/sessoes/${filmeBuscado.id}`} className="btn btn-warning">Trocar sessão</Link>
+                                    <Card.Body>
+                                        <Card.Title as={'h3'}>{filmeBuscado.titulo}</Card.Title>
+                                        <Card.Text>
+                                            <MdCalendarToday className="text-primary me-1" /> <b>Data:</b> {sessaoBuscada.data_sessao} <br />
+                                            <MdAccessTime className="text-primary me-1" /> <b>Horário:</b> {sessaoBuscada.horario_sessao} <br />
+                                            <GoLocation className="text-primary me-1" /> <b>Sala:</b> {sessaoBuscada.sala}
+                                        </Card.Text>
+                                    </Card.Body>
+                                    <Link href={`/sessoes/${filmeBuscado.id}`} className="btn btn-warning mt-2 text-white">Trocar sessão</Link>
                                 </Col>
                                 <Col md={3}>
-                                    <button onClick={comprarIngresso} className="btn btn-success">
+                                    <button onClick={comprarIngresso} className="btn btn-primary">
                                         Comprar Ingresso <GoArrowRight />
                                     </button>
                                 </Col>
