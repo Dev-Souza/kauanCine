@@ -1,15 +1,19 @@
 'use client';
 
 import Footer from "@/app/components/Footer";
+import NavBarLogado from "@/app/components/NavBarLogado";
 import NavBarPadrao from "@/app/components/NavBarPadrao";
 import { Formik } from "formik";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import { GoArrowRight, GoLocation } from "react-icons/go";
 import { MdOutlineChair, MdCalendarToday, MdAccessTime, MdAttachMoney } from "react-icons/md";
 import Swal from "sweetalert2";
 
 export default function Page({ params }) {
+
+    const route = useRouter();
 
     const poltronasPreSelecionadas = JSON.parse(localStorage.getItem('poltronas_pre_selecionadas')) || [];
     const valoresInicializados = poltronasPreSelecionadas.reduce((acc, item) => {
@@ -59,7 +63,8 @@ export default function Page({ params }) {
                 minute: '2-digit',
                 second: '2-digit',
                 hour12: false
-            }), 
+            }),
+            user: userLogado.email
         };
 
         //salvando no localStorage
@@ -70,6 +75,8 @@ export default function Page({ params }) {
             text: "Mais informações foram mandadas para seu email",
             icon: "success"
         });
+
+        return route.push('/')
     }
 
     const atualizarValorTotal = (novoValorIngresso, assento) => {
@@ -80,6 +87,29 @@ export default function Page({ params }) {
         setValorTotal(total);
     };
 
+    //Sobre a sessão do meu usuário
+    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+
+    useEffect(() => {
+        verificarSessao();
+    }, []);
+
+    function verificarSessao() {
+        if (userLogado) {
+            const tempoAtual = new Date().getTime();
+            if (tempoAtual > userLogado.expirationTime) {
+                // Expirou a sessão
+                localStorage.removeItem('sessaoLogin');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sessão expirada',
+                    text: 'Por favor, faça login novamente.',
+                });
+                route.push('/users/login');
+            }
+        }
+    }
+
     return (
         <>
             <style jsx global>{`
@@ -87,7 +117,8 @@ export default function Page({ params }) {
                     background-color: #f0f0f0;
                 }
             `}</style>
-            <NavBarPadrao caminho="/" />
+            {userLogado == null && <NavBarPadrao caminho="/" />}
+            {userLogado != null && <NavBarLogado caminho="/" />}
             <Container style={{ maxWidth: '1000px' }} className="mt-4">
                 <h1>Pagamento de Ingressos</h1>
                 <Row>

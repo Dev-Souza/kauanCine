@@ -1,6 +1,7 @@
 'use client';
 
 import Footer from "@/app/components/Footer";
+import NavBarLogado from "@/app/components/NavBarLogado";
 import NavBarPadrao from "@/app/components/NavBarPadrao";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import { GoArrowRight, GoLocation } from "react-icons/go";
 import { MdAccessTime, MdCalendarToday } from "react-icons/md";
+import Swal from "sweetalert2";
 
 export default function Page({ params }) {
 
@@ -47,11 +49,52 @@ export default function Page({ params }) {
 
     //Pré selecionar as poltronas
     function comprarIngresso() {
-        const poltronasPreSelecionadas = selecionado;
-        localStorage.setItem('poltronas_pre_selecionadas', JSON.stringify(poltronasPreSelecionadas));
-        route.push(`/pagamentos/${sessaoBuscada.id}`);
+        if (userLogado) {
+            if (selecionado.length > 0) {
+                const poltronasPreSelecionadas = selecionado;
+                localStorage.setItem('poltronas_pre_selecionadas', JSON.stringify(poltronasPreSelecionadas));
+                route.push(`/pagamentos/${sessaoBuscada.id}`);
+            } else {
+                // Alerta para o usuário quando nenhuma poltrona foi selecionada
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Nenhuma poltrona selecionada',
+                    text: 'Por favor, selecione uma poltrona para que possamos continuar.',
+                });
+            }
+        } else {
+            // Alerta para o usuário que precisa fazer login
+            Swal.fire({
+                icon: 'info',
+                title: 'Sessão não existe',
+                text: 'Por favor, faça login para que possamos continuar.',
+            });
+            route.push('/users/login');
+        }
     }
 
+    //Sobre a sessão do meu usuário
+    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+
+    useEffect(() => {
+        verificarSessao();
+    }, []);
+
+    function verificarSessao() {
+        if (userLogado) {
+            const tempoAtual = new Date().getTime();
+            if (tempoAtual > userLogado.expirationTime) {
+                // Expirou a sessão
+                localStorage.removeItem('sessaoLogin');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sessão expirada',
+                    text: 'Por favor, faça login novamente.',
+                });
+                route.push('/users/login');
+            }
+        }
+    }
     return (
         <>
             <style jsx global>{
@@ -61,7 +104,8 @@ export default function Page({ params }) {
                 }
                     `
             }</style>
-            <NavBarPadrao caminho="/"></NavBarPadrao>
+            {userLogado == null && <NavBarPadrao caminho="/" />}
+            {userLogado != null && <NavBarLogado caminho="/" />}
             <Container style={{ maxWidth: '1000px' }} className="mt-4">
 
                 <Row style={{ maxWidth: '1000px' }} className="mb-3">

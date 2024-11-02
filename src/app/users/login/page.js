@@ -12,14 +12,24 @@ import Swal from 'sweetalert2';
 export default function Page() {
     const route = useRouter();
 
+    function iniciarSessao(email, duration) {
+        const expirationTime = new Date().getTime() + duration;
+        localStorage.setItem('sessaoLogin', JSON.stringify({ email, expirationTime }));
+    }
+
     function autenticar(dados) {
-        if (dados.email === 'admin' && dados.senha === 'admin') {
-            return route.push('/admin');
-        }
+        const sessionDuration = 30 * 60 * 1000; // Sessão de 30 minutos
         const usuarios = JSON.parse(localStorage.getItem('users')) || [];
         const usuarioEncontrado = usuarios.find(usuario => usuario.email === dados.email);
+        
+        if (dados.email === 'admin' && dados.senha === 'admin') {
+            iniciarSessao(dados.email, sessionDuration);
+            return route.push('/admin');
+        }
+        
 
         if (usuarioEncontrado && usuarioEncontrado.senha === dados.senha) {
+            iniciarSessao(usuarioEncontrado.email, sessionDuration);
             route.push('/');
         } else {
             Swal.fire({

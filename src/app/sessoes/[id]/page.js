@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NavBarPadrao from "@/app/components/NavBarPadrao";
 import { Formik } from "formik";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useRouter } from "next/navigation";
 import Footer from "@/app/components/Footer";
+import NavBarLogado from "@/app/components/NavBarLogado";
 
 export default function Page({ params }) {
 
@@ -33,9 +34,33 @@ export default function Page({ params }) {
         route.push(`/assentos/${data.id_sessao}`);
     }
 
+    //Sobre a sessão do meu usuário
+    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+
+    useEffect(() => {
+        verificarSessao();
+    }, []);
+
+    function verificarSessao() {
+        if (userLogado) {
+            const tempoAtual = new Date().getTime();
+            if (tempoAtual > userLogado.expirationTime) {
+                // Expirou a sessão
+                localStorage.removeItem('sessaoLogin');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sessão expirada',
+                    text: 'Por favor, faça login novamente.',
+                });
+                route.push('/users/login');
+            }
+        }
+    }
+
     return (
         <>
-            <NavBarPadrao caminho="/" />
+            {userLogado == null && <NavBarPadrao caminho="/" />}
+            {userLogado != null && <NavBarLogado caminho="/" />}
             <Container>
                 <h1>{filmeBuscado.titulo}</h1>
                 <Row>
