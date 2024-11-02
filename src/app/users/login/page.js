@@ -1,5 +1,6 @@
 'use client';
 
+import Footer from '@/app/components/Footer';
 import NavBarPadrao from '@/app/components/NavBarPadrao';
 import { Formik } from 'formik';
 import Link from 'next/link';
@@ -94,6 +95,7 @@ export default function Page() {
                     </Card.Body>
                 </Card>
             </Container>
+            <Footer></Footer>
         </>
     );
 }
