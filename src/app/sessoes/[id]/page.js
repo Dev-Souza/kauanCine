@@ -37,26 +37,6 @@ export default function Page({ params }) {
     //Sobre a sessão do meu usuário
     const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
 
-    useEffect(() => {
-        verificarSessao();
-    }, []);
-
-    function verificarSessao() {
-        if (userLogado) {
-            const tempoAtual = new Date().getTime();
-            if (tempoAtual > userLogado.expirationTime) {
-                // Expirou a sessão
-                localStorage.removeItem('sessaoLogin');
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Sessão expirada',
-                    text: 'Por favor, faça login novamente.',
-                });
-                route.push('/users/login');
-            }
-        }
-    }
-
     return (
         <>
             {userLogado == null && <NavBarPadrao caminho="/" />}
