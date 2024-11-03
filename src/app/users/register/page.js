@@ -14,9 +14,8 @@ import { v4 } from "uuid";
 export default function Page() {
     const route = useRouter();
 
-    const users = [];
-
     function salvar(dados) {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
         dados.id = v4();
         users.push(dados);
         localStorage.setItem('users', JSON.stringify(users));
