@@ -34,6 +34,14 @@ export default function Page() {
 
   return (
     <>
+      <style jsx global>{`
+                body {
+                    background-color: #f0f0f0;
+                }
+                    a {
+    text-decoration: none; /* Remove o sublinhado de todos os links */
+}
+      `}</style>
       {userLogado != null && <NavBarLogado />}
       {userLogado == null && <NavbarHeader titulo="Inicial" />}
       <SwipperCarrossel />

@@ -11,7 +11,5 @@ export const FilmesSchema = Yup.object().shape({
     genero: Yup.string()
         .required("O gênero é obrigatório"),
     classificacao: Yup.string()
-        .required("A classificação é obrigatória"),
-    imagem_filme: Yup.string()
-        .url("Insira uma URL válida para a imagem")
+        .required("A classificação é obrigatória")
 });
