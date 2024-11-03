@@ -3,6 +3,7 @@
 import Footer from "@/app/components/Footer";
 import NavBarLogado from "@/app/components/NavBarLogado";
 import NavBarPadrao from "@/app/components/NavBarPadrao";
+import PagamentosValidator from "@/app/validators/PagamentosValidator";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -145,12 +146,15 @@ export default function Page({ params }) {
                                 <Card.Title as="h3">Escolha o tipo de ingresso</Card.Title>
                                 <Formik
                                     initialValues={{ tipo_ingresso: '' }}
+                                    validationSchema={PagamentosValidator}
                                     onSubmit={values => salvar(values)}
                                 >
                                     {({
                                         values,
                                         handleChange,
                                         setFieldValue,
+                                        errors,
+                                        touched
                                     }) => {
                                         const calcularIngresso = (campo, e, assento) => {
                                             let valorIngresso = e.target.value === 'ESTUDANTE' || e.target.value === 'MEIA' ? 16 : 32;
@@ -171,11 +175,15 @@ export default function Page({ params }) {
                                                                 name={`tipo_ingresso_${item}`}
                                                                 value={values[`tipo_ingresso_${item}`] || 'INTEIRA'}
                                                                 onChange={(e) => calcularIngresso(`tipo_ingresso_${item}`, e, item)}
+                                                                isInvalid={touched.tipo_ingresso && errors.tipo_ingresso}
                                                             >
                                                                 <option value={'INTEIRA'}>Inteira - R$ 32</option>
                                                                 <option value={'ESTUDANTE'}>Estudante - PROMOCIONAL - R$ 16</option>
                                                                 <option value={'MEIA'}>Meia - PROMOCIONAL - R$ 16</option>
                                                             </Form.Select>
+                                                            <Form.Control.Feedback type="invalid">
+                                                                {errors.tipo_ingresso}
+                                                            </Form.Control.Feedback>
                                                         </InputGroup>
                                                     </Form.Group>
                                                 ))}

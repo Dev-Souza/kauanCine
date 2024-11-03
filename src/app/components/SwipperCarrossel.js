@@ -1,9 +1,7 @@
-// import Swiper core and required modules
 import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper/modules';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -13,13 +11,13 @@ export default () => {
   return (
     <Swiper
       modules={[Navigation, Pagination, Scrollbar, A11y, Autoplay]}
-      spaceBetween={0} // Remove o espaço entre os slides
-      slidesPerView={1} // Um slide por vez, preenchendo 100% do contêiner
+      spaceBetween={0} 
+      slidesPerView={1} 
       navigation
       pagination={{ clickable: true }}
       scrollbar={{ draggable: true }}
-      autoplay={{ delay: 3000, disableOnInteraction: false }} // Autoplay configurado
-      loop={true} // Loop ativado
+      autoplay={{ delay: 3000, disableOnInteraction: false }} 
+      loop={true}
       style={{ width: '100%', height: '550px' }}
     >
       <SwiperSlide>

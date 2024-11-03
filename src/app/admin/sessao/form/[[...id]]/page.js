@@ -1,5 +1,6 @@
 'use client'
 
+import { SessoesValidator } from "@/app/validators/SessoesValidator";
 import { Formik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -52,12 +53,15 @@ export default function Page({ params }) {
     return (
         <Formik
             initialValues={sessao}
+            validationSchema={SessoesValidator}
             onSubmit={values => salvar(values)}
         >
             {({
                 values,
                 handleChange,
                 handleSubmit,
+                errors,
+                touched
             }) => (
                 <Form className="mt-3">
                     <Form.Group className="mb-3" controlId="horario_sessao">
@@ -67,15 +71,24 @@ export default function Page({ params }) {
                             name="horario_sessao"
                             value={values.horario_sessao}
                             onChange={handleChange('horario_sessao')}
+                            isInvalid={!!errors.horario_sessao && touched.horario_sessao}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.horario_sessao}
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="data_sessao">
                         <Form.Label>Data Sessao</Form.Label>
-                        <Form.Control type="date"
+                        <Form.Control 
+                            type="date"
                             name="data_sessao"
                             value={values.data_sessao}
                             onChange={handleChange('data_sessao')}
+                            isInvalid={!!errors.data_sessao && touched.data_sessao}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.data_sessao}
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="filme">
                         <Form.Label>Filme</Form.Label>
@@ -84,6 +97,7 @@ export default function Page({ params }) {
                             name="filme"
                             value={values.filme}
                             onChange={handleChange('filme')}
+                            isInvalid={!!errors.filme && touched.filme}
                         >
                             <option value={''}>Selecione</option>
                             {filmes.map(item => (
@@ -94,8 +108,10 @@ export default function Page({ params }) {
                                     {item.titulo}
                                 </option>
                             ))}
-
                         </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                            {errors.filme}
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="sala">
                         <Form.Label>Sala</Form.Label>
@@ -104,6 +120,7 @@ export default function Page({ params }) {
                             name="sala"
                             value={values.sala}
                             onChange={handleChange('sala')}
+                            isInvalid={!!errors.sala && touched.sala}
                         >
                             <option value={''}>Selecione</option>
                             {salas.map(item => (
@@ -114,8 +131,10 @@ export default function Page({ params }) {
                                     {item.nome}
                                 </option>
                             ))}
-
                         </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                            {errors.sala}
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <div className="text-center">
                         <Link href={"/sessoes"} className="btn btn-primary"><FaAngleLeft />Voltar</Link>

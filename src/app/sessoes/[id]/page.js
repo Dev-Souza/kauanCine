@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NavBarPadrao from "@/app/components/NavBarPadrao";
 import { Formik } from "formik";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";

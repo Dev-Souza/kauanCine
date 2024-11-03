@@ -2,6 +2,7 @@
 
 import Footer from '@/app/components/Footer';
 import NavBarPadrao from '@/app/components/NavBarPadrao';
+import { LoginValidator } from '@/app/validators/LoginValidator';
 import { Formik } from 'formik';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -49,12 +50,15 @@ export default function Page() {
                         <h2 className="text-center mb-4">Login</h2>
                         <Formik
                             initialValues={{ email: '', senha: '' }}
+                            validationSchema={LoginValidator}
                             onSubmit={values => autenticar(values)}
                         >
                             {({
                                 values,
                                 handleChange,
                                 handleSubmit,
+                                errors,
+                                touched
                             }) => (
                                 <Form onSubmit={handleSubmit}>
                                     <Form.Group className="mb-3" controlId="email">
@@ -68,7 +72,11 @@ export default function Page() {
                                             value={values.email}
                                             onChange={handleChange('email')}
                                             className="shadow-sm"
+                                            isInvalid={touched.email && !!errors.email}
                                         />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.email}
+                                        </Form.Control.Feedback>
                                     </Form.Group>
                                     <Form.Group className="mb-4" controlId="senha">
                                         <Form.Label>
@@ -81,7 +89,11 @@ export default function Page() {
                                             value={values.senha}
                                             onChange={handleChange('senha')}
                                             className="shadow-sm"
+                                            isInvalid={touched.senha && !!errors.senha}
                                         />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.senha}
+                                        </Form.Control.Feedback>
                                     </Form.Group>
                                     <div className="text-center">
                                         <Button

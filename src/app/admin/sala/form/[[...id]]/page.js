@@ -1,9 +1,9 @@
 'use client'
 
+import { SalasValidator } from "@/app/validators/SalasValidator";
 import { Formik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FaCheck } from "react-icons/fa";
 import { FaAngleLeft } from "react-icons/fa";
@@ -44,13 +44,15 @@ export default function Page({ params }) {
     return (
         <Formik
             initialValues={sala}
+            validationSchema={SalasValidator}
             onSubmit={values => salvar(values)}
         >
             {({
                 values,
                 handleChange,
                 handleSubmit,
-                errors
+                errors,
+                touched
             }) => (
                 <Form className="mt-3">
                     <Form.Group className="mb-3" controlId="nome">
@@ -60,7 +62,11 @@ export default function Page({ params }) {
                             name="nome"
                             value={values.nome}
                             onChange={handleChange('nome')}
+                            isInvalid={!!errors.nome && touched.nome}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.nome}
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="tipo_sala">
                         <Form.Label>Tipo da sala</Form.Label>
@@ -75,6 +81,9 @@ export default function Page({ params }) {
                             <option value='2D'>2D</option>
                             <option value='3D'>3D</option>
                         </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                            {errors.tipo_sala}
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <div className="text-center">
                         <Link href={"/sala"} className="btn btn-primary"><FaAngleLeft />Voltar</Link>
