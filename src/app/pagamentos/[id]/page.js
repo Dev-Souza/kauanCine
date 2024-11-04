@@ -120,7 +120,7 @@ export default function Page({ params }) {
             `}</style>
             {userLogado == null && <NavBarPadrao caminho="/" />}
             {userLogado != null && <NavBarLogado caminho="/" />}
-            <Container style={{ maxWidth: '1000px' }} className="mt-4">
+            <Container style={{ maxWidth: '1000px' }} className="mt-4 mb-4">
                 <h1>Pagamento de Ingressos</h1>
                 <Row>
                     <Col md={8}>

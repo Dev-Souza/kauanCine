@@ -25,12 +25,6 @@ export default function NavBarLogado(props) {
                         </Dropdown.Toggle>
 
                         {infoUserLogado?.nome ? < Dropdown.Menu >
-                            <Dropdown.Item href="/profile" aria-label="Meu perfil">
-                                <FiUser className="me-2" /> Meu Perfil 
-                            </Dropdown.Item>
-                            <Dropdown.Item href="/settings" aria-label="Configurações">
-                                <FiUser className="me-2" /> Configurações
-                            </Dropdown.Item>
                             <Dropdown.Divider />
                             <Dropdown.Item onClick={logout} aria-label="Sair">
                                 <FiLogOut className="me-2" /> Sair 
