@@ -23,6 +23,8 @@ export default function Page({ params }) {
         (item, index, self) => index === self.findIndex((t) => t.data_sessao === item.data_sessao)
     );
 
+
+    //Selecionar pela a data
     const [dataSelecionada, setDataSelecionada] = useState('');
     const sessoesFiltradas = sessoesDisponiveis.filter(item => item.data_sessao === dataSelecionada);
 
@@ -30,11 +32,33 @@ export default function Page({ params }) {
         route.push(`/assentos/${data.id_sessao}`);
     }
 
-    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+     //Sobre a sessão do meu usuário
+     const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+
+     useEffect(() => {
+         verificarSessao();
+     }, []);
+ 
+     function verificarSessao() {
+         if (userLogado) {
+             const tempoAtual = new Date().getTime();
+             if (tempoAtual > userLogado.expirationTime) {
+                 // Expirou a sessão
+                 localStorage.removeItem('sessaoLogin');
+                 Swal.fire({
+                     icon: 'info',
+                     title: 'Sessão expirada',
+                     text: 'Por favor, faça login novamente.',
+                 });
+                 route.push('/users/login');
+             }
+         }
+     }
 
     return (
         <>
-            {userLogado == null ? <NavBarPadrao caminho="/" /> : <NavBarLogado caminho="/" />}
+            {userLogado == null && <NavBarPadrao caminho="/" />}
+            {userLogado != null && <NavBarLogado caminho="/" />}
             <Container style={{ minHeight: '60vh' }}>
                 <h1 className="text-center my-4">{filmeBuscado.titulo}</h1>
                 <Row>

@@ -73,7 +73,7 @@ const FilmeMaisVendido = () => {
         <div>
             {userLogado != null ? <NavBarLogado /> : <NavBarHeader />}
             <h2 className='text-center mt-4'>Dashboard KauanCine</h2>
-            <Container>
+            <Container style={{maxWidth: 1100}}>
                 {/* Gráfico - Ingressos Vendidos por Filme */}
                 <Bar data={chartData} options={{
                     responsive: true,

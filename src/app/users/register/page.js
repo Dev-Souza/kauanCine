@@ -76,6 +76,7 @@ export default function Page() {
                                             <Form.Label>Data de Nascimento</Form.Label>
                                             <Form.Control
                                                 type="text"
+                                                placeholder="Digite sua data de nascimento"
                                                 name="data_nascimento"
                                                 value={values.data_nascimento}
                                                 onChange={handleChange('data_nascimento')}

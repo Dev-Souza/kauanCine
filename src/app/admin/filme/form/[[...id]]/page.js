@@ -16,7 +16,8 @@ import { v4 } from "uuid";
 export default function Page({ params }) {
     const route = useRouter();
     const filmes = JSON.parse(localStorage.getItem('filmes')) || [];
-    const dados = filmes.find(item => item.id === params.id);
+    const dados = filmes.find(item => item.id == params.id);
+    console.log(dados)
     const filme = dados || { titulo: '', data_lancamento: '', duracao: '', genero: '', classificacao: '', imagem_filme: '' };
 
     function salvar(dados) {
@@ -81,7 +82,7 @@ export default function Page({ params }) {
                     <Formik
                         initialValues={filme}
                         validationSchema={FilmesSchema}
-                        onSubmit={(values) => salvar(values)}
+                        onSubmit={values => salvar(values)}
                     >
                         {({ values, handleChange, handleSubmit, errors, touched }) => {
                             
@@ -95,7 +96,7 @@ export default function Page({ params }) {
                                             placeholder="Digite o título do filme"
                                             name="titulo"
                                             value={values.titulo}
-                                            onChange={handleChange}
+                                            onChange={handleChange('titulo')}
                                             isInvalid={touched.titulo && !!errors.titulo}
                                             style={{ borderRadius: '10px' }}
                                         />
@@ -109,8 +110,9 @@ export default function Page({ params }) {
                                         <Form.Control
                                             type="text"
                                             name="data_lancamento"
+                                            placeholder="Digite a data de lançamento do filme"
                                             value={values.data_lancamento}
-                                            onChange={handleChange}
+                                            onChange={handleChange('data_lancamento')}
                                             isInvalid={touched.data_lancamento && !!errors.data_lancamento}
                                             style={{ borderRadius: '10px' }}
                                         />
@@ -125,7 +127,7 @@ export default function Page({ params }) {
                                             type="time"
                                             name="duracao"
                                             value={values.duracao}
-                                            onChange={handleChange}
+                                            onChange={handleChange('duracao')}
                                             isInvalid={touched.duracao && !!errors.duracao}
                                             style={{ borderRadius: '10px' }}
                                         />
@@ -139,7 +141,7 @@ export default function Page({ params }) {
                                         <Form.Select
                                             name="genero"
                                             value={values.genero}
-                                            onChange={handleChange}
+                                            onChange={handleChange('genero')}
                                             isInvalid={touched.genero && !!errors.genero}
                                             style={{ borderRadius: '10px' }}
                                         >
@@ -165,7 +167,7 @@ export default function Page({ params }) {
                                         <Form.Select
                                             name="classificacao"
                                             value={values.classificacao}
-                                            onChange={handleChange}
+                                            onChange={handleChange('classificacao')}
                                             isInvalid={touched.classificacao && !!errors.classificacao}
                                             style={{ borderRadius: '10px' }}
                                         >
@@ -189,7 +191,7 @@ export default function Page({ params }) {
                                             placeholder="Digite o URL da imagem do filme"
                                             name="imagem_filme"
                                             value={values.imagem_filme}
-                                            onChange={handleChange}
+                                            onChange={handleChange('imagem_filme')}
                                             isInvalid={touched.imagem_filme && !!errors.imagem_filme}
                                             style={{ borderRadius: '10px' }}
                                         />
