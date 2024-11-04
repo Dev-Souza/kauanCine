@@ -32,26 +32,33 @@ export default function Page({ params }) {
     const filmeBuscado = filmes.find(item => item.titulo == sessaoBuscada.filme);
 
     function comprarIngresso() {
-        //Buscar poltronas bloqueadas
+        // Buscar poltronas bloqueadas
         const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
-
-        //Sessão atual
+    
+        // Sessão atual
         const sessaoExistente = poltronasBloqueadas.find(sessao => sessao.id === sessaoBuscada.id);
-
+    
         if (sessaoExistente) {
-            // Se essa sessão ja existe, adione a ela
+            // Se essa sessão já existe, adicione a ela
             sessaoExistente.poltronas.push(...poltronasPreSelecionadas);
         } else {
-            // Se não existir crie uma nova
+            // Se não existir, crie uma nova
             poltronasBloqueadas.push({
                 id: sessaoBuscada.id,
                 poltronas: poltronasPreSelecionadas
             });
         }
         localStorage.setItem('poltronas_bloqueadas', JSON.stringify(poltronasBloqueadas));
-
-        //Parte para salvar as informações da compra
-        const pagamentos = {
+    
+        // Parte para salvar as informações da compra
+        let pagamentos = JSON.parse(localStorage.getItem('pagamentos'));
+    
+        // Verificar se `pagamentos` não é um array e inicializá-lo caso contrário
+        if (!Array.isArray(pagamentos)) {
+            pagamentos = [];
+        }
+    
+        const novoPagamento = {
             valorTotalCompra: valorTotal,
             filme: filmeBuscado.id,
             sessao: sessaoBuscada.id,
@@ -67,17 +74,17 @@ export default function Page({ params }) {
             }),
             user: userLogado.email
         };
-
-        //salvando no localStorage
-        localStorage.setItem('pagamentos', JSON.stringify(pagamentos))
-
+    
+        pagamentos.push(novoPagamento); // Adiciona o pagamento corretamente ao array
+        localStorage.setItem('pagamentos', JSON.stringify(pagamentos));
+    
         Swal.fire({
             title: "Assento reservado com sucesso!",
             text: "Mais informações foram mandadas para seu email",
             icon: "success"
         });
-
-        return route.push('/')
+    
+        return route.push('/');
     }
 
     const atualizarValorTotal = (novoValorIngresso, assento) => {

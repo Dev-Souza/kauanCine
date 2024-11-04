@@ -4,7 +4,7 @@ export const FilmesSchema = Yup.object().shape({
     titulo: Yup.string()
         .required("O título é obrigatório")
         .min(2, "O título deve ter pelo menos 2 caracteres"),
-    data_lancamento: Yup.date()
+    data_lancamento: Yup.string()
         .required("A data de lançamento é obrigatória"),
     duracao: Yup.string()
         .required("A duração é obrigatória"),

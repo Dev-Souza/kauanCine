@@ -53,6 +53,7 @@ export default function Page() {
                                 // Máscara para o celular
                                 values.celular = mask(values.celular, "(99) 99999-9999");
 
+                                values.data_nascimento = mask(values.data_nascimento, '99/99/9999');
                                 return (
                                     <Form noValidate onSubmit={handleSubmit}>
                                         <Form.Group className="mb-3" controlId="nome">
@@ -74,7 +75,7 @@ export default function Page() {
                                         <Form.Group className="mb-3" controlId="data_nascimento">
                                             <Form.Label>Data de Nascimento</Form.Label>
                                             <Form.Control
-                                                type="date"
+                                                type="text"
                                                 name="data_nascimento"
                                                 value={values.data_nascimento}
                                                 onChange={handleChange('data_nascimento')}
