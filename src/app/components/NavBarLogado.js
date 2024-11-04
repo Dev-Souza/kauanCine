@@ -1,18 +1,18 @@
 import { Container, Nav, Navbar, Dropdown } from "react-bootstrap";
 import { useRouter } from "next/navigation";
-import { FiUser, FiLogOut } from "react-icons/fi"; // Importando ícones
+import { FiUser, FiLogOut } from "react-icons/fi";
 
 export default function NavBarLogado(props) {
     const route = useRouter();
 
     function logout() {
-        localStorage.removeItem("sessaoLogin");  // Remove sessão do localStorage
-        route.push("/users/login");  // Redireciona para página de login
+        localStorage.removeItem("sessaoLogin");  
+        route.push("/users/login");  
     }
 
     const users = JSON.parse(localStorage.getItem('users'));
     const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
-    const infoUserLogado = users.find(item => item.email === userLogado?.email); // Adicione um fallback aqui
+    const infoUserLogado = users.find(item => item.email === userLogado?.email);
 
     return (
         <Navbar bg="dark" data-bs-theme="dark" style={{ height: 100 }} className="fs-5">
@@ -21,24 +21,35 @@ export default function NavBarLogado(props) {
                 <Nav className="ms-auto">
                     <Dropdown align="end">
                         <Dropdown.Toggle variant="secondary" id="dropdown-basic" aria-label="User menu">
-                            <FiUser className="me-2" />Olá, {infoUserLogado?.nome || 'Admin'} {/* Ícone de usuário */}
+                            <FiUser className="me-2" />Olá, {infoUserLogado?.nome || 'Admin'}
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
+                        {infoUserLogado?.nome ? < Dropdown.Menu >
                             <Dropdown.Item href="/profile" aria-label="Meu perfil">
-                                <FiUser className="me-2" /> Meu Perfil {/* Ícone de perfil */}
+                                <FiUser className="me-2" /> Meu Perfil 
                             </Dropdown.Item>
                             <Dropdown.Item href="/settings" aria-label="Configurações">
-                                <FiUser className="me-2" /> Configurações {/* Ícone de configurações */}
+                                <FiUser className="me-2" /> Configurações
                             </Dropdown.Item>
                             <Dropdown.Divider />
                             <Dropdown.Item onClick={logout} aria-label="Sair">
-                                <FiLogOut className="me-2" /> Sair {/* Ícone de sair */}
+                                <FiLogOut className="me-2" /> Sair 
                             </Dropdown.Item>
                         </Dropdown.Menu>
+                            :
+                            <Dropdown.Menu>
+                                <Dropdown.Item href="/admin" aria-label="Configurações">
+                                    <FiUser className="me-2" /> Tela Admin
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item onClick={logout} aria-label="Sair">
+                                    <FiLogOut className="me-2" /> Sair 
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        }
                     </Dropdown>
                 </Nav>
             </Container>
-        </Navbar>
+        </Navbar >
     );
 }
