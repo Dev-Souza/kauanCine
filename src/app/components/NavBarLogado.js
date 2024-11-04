@@ -17,7 +17,7 @@ export default function NavBarLogado(props) {
     return (
         <Navbar bg="dark" data-bs-theme="dark" style={{ height: 100 }} className="fs-5">
             <Container>
-                <Navbar.Brand href="/">CineKauan</Navbar.Brand>
+                <Navbar.Brand href="/">KauanCine</Navbar.Brand>
                 <Nav className="ms-auto">
                     <Dropdown align="end">
                         <Dropdown.Toggle variant="secondary" id="dropdown-basic" aria-label="User menu">

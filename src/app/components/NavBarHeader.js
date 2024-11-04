@@ -6,7 +6,7 @@ export default function NavBarHeader(props) {
       <Navbar bg="dark" data-bs-theme="dark" style={{ height: 100 }}>
         <Container>
           <Navbar.Brand href="/" className="me-auto">
-            <img src="" alt="" /> CineKauan
+            <img src="" alt="" /> KauanCine
           </Navbar.Brand>
           <Nav className="mx-auto fs-5">
             <Nav.Link href="/">Filmes</Nav.Link>

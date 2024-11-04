@@ -5,7 +5,7 @@ export default function NavBarPadrao(props) {
         <>
             <Navbar bg="dark" data-bs-theme="dark" style={{ height: 100 }} className="fs-5">
                 <Container>
-                    <Navbar.Brand href="/">CineKauan</Navbar.Brand>
+                    <Navbar.Brand href="/">KauanCine</Navbar.Brand>
                     <Nav className="ms-auto">
                         <Nav.Link href={props.caminho}>Voltar</Nav.Link>
                     </Nav>
