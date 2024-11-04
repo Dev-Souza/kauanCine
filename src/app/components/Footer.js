@@ -6,7 +6,7 @@ export default function Footer() {
     return (
         <footer className="text-center text-lg-start text-white" style={{ backgroundColor: "#1c2331" }}>
             <Container>
-                <section className="mt-5">
+                <section className="">
                     <Row className="text-center text-md-start">
                         <Col md={3} lg={4} xl={3} className="mx-auto mb-4">
                             <h6 className="text-uppercase fw-bold mt-4">KauanCine</h6>
