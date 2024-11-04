@@ -44,7 +44,7 @@ export default function Page() {
     return (
         <>
             <NavBarPadrao caminho="/" />
-            <Container className="d-flex justify-content-center align-items-center" style={{ marginTop: 80 }}>
+            <Container className="d-flex justify-content-center align-items-center" style={{ marginTop: 120 }}>
                 <Card className="shadow-lg p-4" style={{ maxWidth: '400px', width: '100%' }}>
                     <Card.Body>
                         <h2 className="text-center mb-4">Login</h2>
@@ -117,7 +117,6 @@ export default function Page() {
                     </Card.Body>
                 </Card>
             </Container>
-            <Footer></Footer>
         </>
     );
 }
