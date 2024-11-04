@@ -5,12 +5,38 @@ import { Card, Col, Container, Row } from "react-bootstrap";
 import { ImFilm } from "react-icons/im";
 import { MdMeetingRoom } from "react-icons/md";
 import { SiSessionize, SiDatadog } from "react-icons/si";
-import NavBarPadrao from "../components/NavBarPadrao";
+import NavBarLogado from "../components/NavBarLogado";
+import { useEffect } from "react";
+import NavBarHeader from "../components/NavBarHeader";
 
 export default function Page() {
+
+    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+
+    useEffect(() => {
+        verificarSessao();
+    }, []);
+
+    function verificarSessao() {
+        if (userLogado) {
+            const tempoAtual = new Date().getTime();
+            if (tempoAtual > userLogado.expirationTime) {
+                // Expirou a sessão
+                localStorage.removeItem('sessaoLogin');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sessão expirada',
+                    text: 'Por favor, faça login novamente.',
+                });
+                route.push('/users/login');
+            }
+        }
+    }
+
     return (
         <>
-            <NavBarPadrao caminho="/" />
+            {userLogado != null && <NavBarLogado />}
+            {userLogado == null && <NavBarHeader />}
             <Container className="mt-5">
                 <h1 className="text-center mb-4 display-4 fw-bold">Painel de Administração</h1>
                 <p className="text-center mb-5 text-muted">

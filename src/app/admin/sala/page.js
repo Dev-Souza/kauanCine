@@ -1,11 +1,13 @@
 'use client'
 
 import Link from "next/link";
-import { Table } from "react-bootstrap";
+import { Container, Table } from "react-bootstrap";
 import { FaAngleLeft, FaPlusCircle } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { FaTrashAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import NavBarLogado from "@/app/components/NavBarLogado";
+import NavBarHeader from "@/app/components/NavBarHeader";
 
 export default function Page() {
 
@@ -39,41 +41,68 @@ export default function Page() {
         });
     }
 
+    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+
+    useEffect(() => {
+        verificarSessao();
+    }, []);
+
+    function verificarSessao() {
+        if (userLogado) {
+            const tempoAtual = new Date().getTime();
+            if (tempoAtual > userLogado.expirationTime) {
+                // Expirou a sessão
+                localStorage.removeItem('sessaoLogin');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sessão expirada',
+                    text: 'Por favor, faça login novamente.',
+                });
+                route.push('/users/login');
+            }
+        }
+    }
+
     return (
         <>
-            <Link href={"/admin/sala/form"} className="btn btn-primary mb-3 mt-3">
-                <FaPlusCircle />Novo
-            </Link>
-            <Link href={"/admin"} className="btn btn-danger"><FaAngleLeft />Tela Admin</Link>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Nome</th>
-                        <th>Tipo Sala</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {salas.map((item, i) => (
-                        <tr key={item.id}>
-                            <td>{i + 1}</td>
-                            <td>{item.nome}</td>
-                            <td>{item.tipo_sala}</td>
-                            <td>
-                                <Link href={`/admin/sala/form/${item.id}`}>
-                                    <MdEdit title="Editar" className="text-primary" />
-                                </Link>
-                                <FaTrashAlt
-                                    title="Excluir"
-                                    className="text-danger"
-                                    onClick={() => excluir(item.id)}
-                                />
-
-                            </td>
+            {userLogado != null && <NavBarLogado />}
+            {userLogado == null && <NavBarHeader />}
+            <h1 className="text-center mt-4">Salas</h1>
+            <Container>
+                <Link href={"/admin/sala/form"} className="btn btn-primary" style={{marginRight: 5}}>
+                    <FaPlusCircle />Novo
+                </Link>
+                <Link href={"/admin"} className="btn btn-danger"><FaAngleLeft />Tela Admin</Link>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome</th>
+                            <th>Tipo Sala</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
+                    </thead>
+                    <tbody>
+                        {salas.map((item, i) => (
+                            <tr key={item.id}>
+                                <td>{i + 1}</td>
+                                <td>{item.nome}</td>
+                                <td>{item.tipo_sala}</td>
+                                <td>
+                                    <Link href={`/admin/sala/form/${item.id}`}>
+                                        <MdEdit title="Editar" className="text-primary" />
+                                    </Link>
+                                    <FaTrashAlt
+                                        title="Excluir"
+                                        className="text-danger"
+                                        onClick={() => excluir(item.id)}
+                                    />
+
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </Container>
         </>
     )
 }

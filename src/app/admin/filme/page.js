@@ -1,20 +1,46 @@
 'use client'
 
 import Link from "next/link";
-import { Table } from "react-bootstrap";
+import { Container, Table } from "react-bootstrap";
 import { FaAngleLeft, FaPlusCircle } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { FaTrashAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import NavBarLogado from "@/app/components/NavBarLogado";
+import NavBarHeader from "@/app/components/NavBarHeader";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+    const route = useRouter();
 
     const [filmes, setFilmes] = useState([])
 
     useEffect(() => {
         setFilmes(JSON.parse(localStorage.getItem('filmes')) || [])
     }, [])
+
+    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+
+    useEffect(() => {
+        verificarSessao();
+    }, []);
+
+    function verificarSessao() {
+        if (userLogado) {
+            const tempoAtual = new Date().getTime();
+            if (tempoAtual > userLogado.expirationTime) {
+                // Expirou a sessão
+                localStorage.removeItem('sessaoLogin');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sessão expirada',
+                    text: 'Por favor, faça login novamente.',
+                });
+                route.push('/users/login');
+            }
+        }
+    }
 
     function excluir(id) {
         Swal.fire({
@@ -42,7 +68,11 @@ export default function Page() {
 
     return (
         <>
-            <Link href={"/admin/filme/form"} className="btn btn-primary mb-3 mt-3">
+            {userLogado != null && <NavBarLogado />}
+            {userLogado == null && <NavBarHeader />}
+            <h1 className="text-center mt-4">Filmes</h1>
+            <Container>
+            <Link href={"/admin/filme/form"} className="btn btn-primary" style={{marginRight: 5}}>
                 <FaPlusCircle />Novo
             </Link>
             <Link href={"/admin"} className="btn btn-danger"><FaAngleLeft />Tela Admin</Link>
@@ -70,7 +100,7 @@ export default function Page() {
                             <td>{item.genero}</td>
                             <td>{item.classificacao}</td>
                             <td>
-                                <img src={item.imagem_filme} />
+                                <img src={item.imagem_filme} style={{ height: 150, width: '60%', display: 'block', margin: '0 auto' }}/>
                             </td>
                             <td>
                                 <Link href={`filme/form/${item.id}`}>
@@ -87,6 +117,7 @@ export default function Page() {
                     ))}
                 </tbody>
             </Table>
+            </Container>
         </>
     )
 }

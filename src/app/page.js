@@ -43,7 +43,7 @@ export default function Page() {
 }
       `}</style>
       {userLogado != null && <NavBarLogado />}
-      {userLogado == null && <NavbarHeader titulo="Inicial" />}
+      {userLogado == null && <NavbarHeader />}
       <SwipperCarrossel />
       <CardsFilmes />
       <Footer />
