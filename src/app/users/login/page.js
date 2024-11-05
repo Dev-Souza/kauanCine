@@ -19,7 +19,7 @@ export default function Page() {
     }
 
     function autenticar(dados) {
-        const sessionDuration = 30 * 60 * 1000; // Sessão de 30 minutos
+        const sessionDuration = 1 * 60 * 1000; // Sessão de 30 minutos
         const usuarios = JSON.parse(localStorage.getItem('users')) || [];
         const usuarioEncontrado = usuarios.find(usuario => usuario.email === dados.email);
         
