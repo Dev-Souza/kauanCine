@@ -12,6 +12,7 @@
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.6",
+    "express": "^4.21.2",
     "formik": "^2.4.6",
     "mongodb": "^6.15.0",
     "mongoose": "^8.13.0",
