@@ -1,6 +1,5 @@
 'use client';
 
-import Footer from '@/app/components/Footer';
 import NavBarPadrao from '@/app/components/NavBarPadrao';
 import { LoginValidator } from '@/app/validators/LoginValidator';
 import { Formik } from 'formik';
