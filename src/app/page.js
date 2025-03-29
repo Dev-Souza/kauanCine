@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import CardsFilmes from "./components/CardsFilmes";
 import Footer from "./components/Footer";
@@ -10,24 +10,29 @@ import { useRouter } from "next/navigation";
 
 export default function Page() {
   const route = useRouter();
-  const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+  const [userLogado, setUserLogado] = useState(null);
 
   useEffect(() => {
-    verificarSessao();
+    if (typeof window !== "undefined") {
+      const user = JSON.parse(localStorage.getItem("sessaoLogin"));
+      setUserLogado(user);
+      verificarSessao(user);
+    }
   }, []);
 
-  function verificarSessao() {
-    if (userLogado) {
+  function verificarSessao(user) {
+    if (user) {
       const tempoAtual = new Date().getTime();
-      if (tempoAtual > userLogado.expirationTime) {
+      if (tempoAtual > user.expirationTime) {
         // Expirou a sessão
-        localStorage.removeItem('sessaoLogin');
+        localStorage.removeItem("sessaoLogin");
+        setUserLogado(null);
         Swal.fire({
-          icon: 'info',
-          title: 'Sessão expirada',
-          text: 'Por favor, faça login novamente.',
+          icon: "info",
+          title: "Sessão expirada",
+          text: "Por favor, faça login novamente.",
         });
-        route.push('/users/login');
+        route.push("/users/login");
       }
     }
   }
@@ -35,15 +40,15 @@ export default function Page() {
   return (
     <>
       <style jsx global>{`
-                body {
-                    background-color: #f0f0f0;
-                }
-                    a {
-    text-decoration: none; /* Remove o sublinhado de todos os links */
-}
+        body {
+          background-color: #f0f0f0;
+        }
+        a {
+          text-decoration: none;
+        }
       `}</style>
-      {userLogado != null && <NavBarLogado />}
-      {userLogado == null && <NavbarHeader />}
+
+      {userLogado ? <NavBarLogado /> : <NavbarHeader />}
       <SwipperCarrossel />
       <CardsFilmes />
       <Footer />

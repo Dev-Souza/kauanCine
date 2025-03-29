@@ -10,9 +10,9 @@ export default function NavBarLogado(props) {
         route.push("/users/login");  
     }
 
-    const users = JSON.parse(localStorage.getItem('users'));
-    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
-    const infoUserLogado = users.find(item => item.email === userLogado?.email);
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin')) || {};
+    const infoUserLogado = users.find(item => item.email === userLogado?.email) ;
 
     return (
         <Navbar bg="dark" data-bs-theme="dark" style={{ height: 100 }} className="fs-5">

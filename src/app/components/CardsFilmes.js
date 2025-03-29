@@ -29,8 +29,8 @@ export default function CardsFilmes() {
                             ) : (
 
                                 filmes.map(item => (
-                                    <Col md={4} className='mt-2 p-1'>
-                                        <Link href={`/sessoes/${item.id}`} key={item.id} passHref>
+                                    <Col key={item.id} md={4} className='mt-2 p-1'>
+                                        <Link href={`/sessoes/${item.id}`} passHref>
                                             <Card style={{height: '100%' }}>
                                                 <Card.Img
                                                     variant="top"

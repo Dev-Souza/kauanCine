@@ -12,14 +12,26 @@ import { MdAccessTime, MdCalendarToday } from "react-icons/md";
 import Swal from "sweetalert2";
 
 export default function Page({ params }) {
-
     const route = useRouter();
-    const sessaoBuscada = React.useMemo(() => {
-        const sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
-        return sessoes.find(item => item.id == params.id);
-    }, [params.id]);
+    
+    // Estado para armazenar a sessão
+    const [sessaoBuscada, setSessaoBuscada] = useState(null);
+    
+    // Carrega a sessão e o filme assim que os parâmetros estão disponíveis
+    useEffect(() => {
+        async function fetchParams() {
+            const resolvedParams = await params;  // Aguarda a resolução do parâmetro
+            const sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
+            const sessaoEncontrada = sessoes.find(item => item.id == resolvedParams.id);
+            setSessaoBuscada(sessaoEncontrada);
+        }
+
+        fetchParams();
+    }, [params]);
+
+    // Garante que o filme buscado seja exibido
     const filmes = JSON.parse(localStorage.getItem('filmes'));
-    const filmeBuscado = filmes.find(item => item.titulo == sessaoBuscada?.filme);
+    const filmeBuscado = filmes.find(item => item.titulo === sessaoBuscada?.filme);
 
     const fileiras = ['K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'];
     const poltronas = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
@@ -29,33 +41,30 @@ export default function Page({ params }) {
 
     // Carrega as poltronas bloqueadas da sessão atual
     useEffect(() => {
-        console.log('Sessao buscada:', sessaoBuscada);
-        const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
-        const sessaoAtual = poltronasBloqueadas.find(item => item.id === sessaoBuscada?.id);
-
-        setBloqueadas(sessaoAtual?.poltronas || []);
+        if (sessaoBuscada) {
+            const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
+            const sessaoAtual = poltronasBloqueadas.find(item => item.id === sessaoBuscada?.id);
+            setBloqueadas(sessaoAtual?.poltronas || []);
+        }
     }, [sessaoBuscada]);
 
     const selecionarPoltrona = (poltronaCompleta) => {
-        // Alterna a seleção
         setSelecionado((item) => item.includes(poltronaCompleta) ? item.filter(item => item !== poltronaCompleta) : [...item, poltronaCompleta]);
     };
 
     function limparSelecao() {
-        //Limpa as que foram selecionadas
         setSelecionado([]);
     }
 
-
-    //Pré selecionar as poltronas
     function comprarIngresso() {
+        const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+        
         if (userLogado) {
             if (selecionado.length > 0) {
                 const poltronasPreSelecionadas = selecionado;
                 localStorage.setItem('poltronas_pre_selecionadas', JSON.stringify(poltronasPreSelecionadas));
                 route.push(`/pagamentos/${sessaoBuscada.id}`);
             } else {
-                // Alerta para o usuário quando nenhuma poltrona foi selecionada
                 Swal.fire({
                     icon: 'error',
                     title: 'Nenhuma poltrona selecionada',
@@ -63,7 +72,6 @@ export default function Page({ params }) {
                 });
             }
         } else {
-            // Alerta para o usuário que precisa fazer login
             Swal.fire({
                 icon: 'info',
                 title: 'Sessão não existe',
@@ -73,18 +81,13 @@ export default function Page({ params }) {
         }
     }
 
-    //Sobre a sessão do meu usuário
-    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
-
+    // Verifica a sessão do usuário
     useEffect(() => {
-        verificarSessao();
-    }, []);
-
-    function verificarSessao() {
+        const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+        
         if (userLogado) {
             const tempoAtual = new Date().getTime();
             if (tempoAtual > userLogado.expirationTime) {
-                // Expirou a sessão
                 localStorage.removeItem('sessaoLogin');
                 Swal.fire({
                     icon: 'info',
@@ -94,44 +97,43 @@ export default function Page({ params }) {
                 route.push('/users/login');
             }
         }
-    }
+    }, []);
+
     return (
         <>
-            <style jsx global>{
-                `
-                body {
-                    background-color: #f0f0f0;
-                }
-                    `
-            }</style>
-            {userLogado == null && <NavBarPadrao caminho="/" />}
-            {userLogado != null && <NavBarLogado caminho="/" />}
+            <style jsx global> 
+                {`
+                    body {
+                        background-color: #f0f0f0;
+                    }
+                `}
+            </style>
+            {JSON.parse(localStorage.getItem('sessaoLogin')) == null && <NavBarPadrao caminho="/" />}
+            {JSON.parse(localStorage.getItem('sessaoLogin')) != null && <NavBarLogado caminho="/" />}
             <Container style={{ maxWidth: '1000px' }} className="mt-4">
-
                 <Row style={{ maxWidth: '1000px' }} className="mb-3">
                     <Col md={2}>
-                        <img src={filmeBuscado.imagem_filme} style={{ width: '100%', height: 'auto' }} alt={filmeBuscado.titulo} />
+                        <img src={filmeBuscado?.imagem_filme} style={{ width: '100%', height: 'auto' }} alt={filmeBuscado?.titulo} />
                     </Col>
                     <Col md={10}>
                         <div className="mb-3 bg-white" style={{ padding: '20px 15px', width: '100%' }}>
                             <Row>
                                 <Col md={9}>
                                     <Card.Body>
-                                        <Card.Title as={'h3'}>{filmeBuscado.titulo}</Card.Title>
+                                        <Card.Title as={'h3'}>{filmeBuscado?.titulo}</Card.Title>
                                         <Card.Text>
-                                            <MdCalendarToday className="text-primary me-1" /> <b>Data:</b> {sessaoBuscada.data_sessao} <br />
-                                            <MdAccessTime className="text-primary me-1" /> <b>Horário:</b> {sessaoBuscada.horario_sessao} <br />
-                                            <GoLocation className="text-primary me-1" /> <b>Sala:</b> {sessaoBuscada.sala}
+                                            <MdCalendarToday className="text-primary me-1" /> <b>Data:</b> {sessaoBuscada?.data_sessao} <br />
+                                            <MdAccessTime className="text-primary me-1" /> <b>Horário:</b> {sessaoBuscada?.horario_sessao} <br />
+                                            <GoLocation className="text-primary me-1" /> <b>Sala:</b> {sessaoBuscada?.sala}
                                         </Card.Text>
                                     </Card.Body>
-                                    <Link href={`/sessoes/${filmeBuscado.id}`} className="btn btn-warning mt-2 text-white">Trocar sessão</Link>
+                                    <Link href={`/sessoes/${filmeBuscado?.id}`} className="btn btn-warning mt-2 text-white">Trocar sessão</Link>
                                 </Col>
                                 <Col md={3}>
                                     <button onClick={comprarIngresso} className="btn btn-primary">
                                         Comprar Ingresso <GoArrowRight />
                                     </button>
                                 </Col>
-
                             </Row>
                         </div>
                     </Col>
@@ -201,7 +203,7 @@ export default function Page({ params }) {
                     <Button className="btn btn-primary" onClick={limparSelecao}>Limpar Seleção</Button>
                 </div>
             </Container>
-            <Footer></Footer>
+            <Footer />
         </>
     );
 }

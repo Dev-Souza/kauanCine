@@ -3,62 +3,87 @@
 import { useEffect, useState } from "react";
 import NavBarPadrao from "@/app/components/NavBarPadrao";
 import { Formik } from "formik";
-import { Button, Card, Col, Container, Form, Row, Spinner, Alert } from "react-bootstrap";
-import { useRouter } from "next/navigation";
+import { Button, Card, Col, Container, Form, Row, Alert } from "react-bootstrap";
+import { useRouter, useParams } from "next/navigation";
 import Footer from "@/app/components/Footer";
 import NavBarLogado from "@/app/components/NavBarLogado";
+import Swal from "sweetalert2";
 
-export default function Page({ params }) {
+export default function Page() {
     const route = useRouter();
-    
-    const filmes = JSON.parse(localStorage.getItem('filmes')) || [];
-    const filmeBuscado = filmes.find(item => item.id == params.id);
-
-    // Buscando sessões disponíveis para o filme buscado
-    const sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
-    const sessoesDisponiveis = sessoes.filter(item => item.filme === filmeBuscado.titulo);
-
-    // Removendo datas duplicadas para o select de datas
-    const sessoesUnicas = sessoesDisponiveis.filter(
-        (item, index, self) => index === self.findIndex((t) => t.data_sessao === item.data_sessao)
-    );
-
-
-    //Selecionar pela a data
+    const params = useParams(); // Captura corretamente os parâmetros da URL
+    const [filmeBuscado, setFilmeBuscado] = useState(null);
+    const [sessoesUnicas, setSessoesUnicas] = useState([]);
+    const [sessoesFiltradas, setSessoesFiltradas] = useState([]);
     const [dataSelecionada, setDataSelecionada] = useState('');
-    const sessoesFiltradas = sessoesDisponiveis.filter(item => item.data_sessao === dataSelecionada);
+    const [userLogado, setUserLogado] = useState(null);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            // Obtendo dados do filme
+            const filmes = JSON.parse(localStorage.getItem('filmes')) || [];
+            const filmeEncontrado = filmes.find(item => item.id == params.id);
+            setFilmeBuscado(filmeEncontrado);
+
+            // Obtendo sessões disponíveis
+            const sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
+            const sessoesDisponiveis = sessoes.filter(item => item.filme === filmeEncontrado?.titulo);
+            
+            // Removendo datas duplicadas
+            const sessoesUnicas = sessoesDisponiveis.filter(
+                (item, index, self) => index === self.findIndex((t) => t.data_sessao === item.data_sessao)
+            );
+
+            setSessoesUnicas(sessoesUnicas);
+
+            // Verificando usuário logado
+            const sessaoLogin = JSON.parse(localStorage.getItem('sessaoLogin'));
+            setUserLogado(sessaoLogin);
+        }
+    }, [params.id]);
+
+    useEffect(() => {
+        if (dataSelecionada) {
+            if (typeof window !== "undefined") {
+                const sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
+                const sessoesDisponiveis = sessoes.filter(item => item.filme === filmeBuscado?.titulo);
+                const sessoesFiltradas = sessoesDisponiveis.filter(item => item.data_sessao === dataSelecionada);
+                setSessoesFiltradas(sessoesFiltradas);
+            }
+        }
+    }, [dataSelecionada]);
+
+    useEffect(() => {
+        verificarSessao();
+    }, [userLogado]);
+
+    function verificarSessao() {
+        if (userLogado) {
+            const tempoAtual = new Date().getTime();
+            if (tempoAtual > userLogado.expirationTime) {
+                // Expirou a sessão
+                localStorage.removeItem('sessaoLogin');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sessão expirada',
+                    text: 'Por favor, faça login novamente.',
+                });
+                route.push('/users/login');
+            }
+        }
+    }
 
     function salvar(data) {
         route.push(`/assentos/${data.id_sessao}`);
     }
 
-     //Sobre a sessão do meu usuário
-     const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
-
-     useEffect(() => {
-         verificarSessao();
-     }, []);
- 
-     function verificarSessao() {
-         if (userLogado) {
-             const tempoAtual = new Date().getTime();
-             if (tempoAtual > userLogado.expirationTime) {
-                 // Expirou a sessão
-                 localStorage.removeItem('sessaoLogin');
-                 Swal.fire({
-                     icon: 'info',
-                     title: 'Sessão expirada',
-                     text: 'Por favor, faça login novamente.',
-                 });
-                 route.push('/users/login');
-             }
-         }
-     }
+    if (!filmeBuscado) {
+        return <h1>Carregando...</h1>;
+    }
 
     return (
         <>
-            {userLogado == null && <NavBarPadrao caminho="/" />}
-            {userLogado != null && <NavBarLogado caminho="/" />}
+            {userLogado == null ? <NavBarPadrao caminho="/" /> : <NavBarLogado caminho="/" />}
             <Container style={{ minHeight: '60vh' }}>
                 <h1 className="text-center my-4">{filmeBuscado.titulo}</h1>
                 <Row>

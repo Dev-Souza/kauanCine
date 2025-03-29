@@ -11,33 +11,87 @@ import { Button, Card, Col, Container, Form, InputGroup, Row } from "react-boots
 import { GoArrowRight, GoLocation } from "react-icons/go";
 import { MdOutlineChair, MdCalendarToday, MdAccessTime, MdAttachMoney } from "react-icons/md";
 import Swal from "sweetalert2";
+import { use } from 'react';
 
 export default function Page({ params }) {
-
     const route = useRouter();
 
-    const poltronasPreSelecionadas = JSON.parse(localStorage.getItem('poltronas_pre_selecionadas')) || [];
-    const valoresInicializados = poltronasPreSelecionadas.reduce((acc, item) => {
-        acc[item] = 32; // Define "Inteira" como padrão
-        return acc;
-    }, {});
+    // Desembrulhando o parâmetro `params` com `use` antes de acessar
+    const paramId = use(params).id;
 
-    const [valorTotal, setValorTotal] = useState(Object.values(valoresInicializados).reduce((acc, val) => acc + val, 0));
-    const [valoresIngressos, setValoresIngressos] = useState(valoresInicializados);
+    const [poltronasPreSelecionadas, setPoltronasPreSelecionadas] = useState([]);
+    const [filmes, setFilmes] = useState([]);
+    const [sessoes, setSessoes] = useState([]);
+    const [userLogado, setUserLogado] = useState(null);
+    const [valorTotal, setValorTotal] = useState(0);
+    const [valoresIngressos, setValoresIngressos] = useState({});
 
-    const sessoes = JSON.parse(localStorage.getItem('sessoes'));
-    const sessaoBuscada = sessoes.find(item => item.id == params.id);
+    useEffect(() => {
+        // Verificar se estamos no lado do cliente
+        if (typeof window !== "undefined") {
+            const sessoesData = JSON.parse(localStorage.getItem('sessoes')) || [];
+            const filmesData = JSON.parse(localStorage.getItem('filmes')) || [];
+            const poltronasData = JSON.parse(localStorage.getItem('poltronas_pre_selecionadas')) || [];
+            const userData = JSON.parse(localStorage.getItem('sessaoLogin'));
 
-    const filmes = JSON.parse(localStorage.getItem('filmes'));
-    const filmeBuscado = filmes.find(item => item.titulo == sessaoBuscada.filme);
+            setSessoes(sessoesData);
+            setFilmes(filmesData);
+            setPoltronasPreSelecionadas(poltronasData);
+            setUserLogado(userData);
+
+            // Inicializar os valores dos ingressos
+            const valoresInicializados = poltronasData.reduce((acc, item) => {
+                acc[item] = 32; // Define "Inteira" como padrão
+                return acc;
+            }, {});
+            setValoresIngressos(valoresInicializados);
+
+            // Calcular o valor total inicial
+            const totalInicial = Object.values(valoresInicializados).reduce((acc, val) => acc + val, 0);
+            setValorTotal(totalInicial);
+        }
+    }, []); // O array vazio garante que isso só aconteça uma vez após a renderização inicial
+
+    // Verifica a sessão do usuário
+    useEffect(() => {
+        verificarSessao();
+    }, []); 
+
+    function verificarSessao() {
+        if (userLogado) {
+            const tempoAtual = new Date().getTime();
+            if (tempoAtual > userLogado.expirationTime) {
+                // Expirou a sessão
+                localStorage.removeItem('sessaoLogin');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sessão expirada',
+                    text: 'Por favor, faça login novamente.',
+                });
+                route.push('/users/login');
+            }
+        }
+    }
+
+    // Acessar a sessão e o filme buscado com base no param.id
+    const sessaoBuscada = sessoes.find(item => item.id == paramId); // Usar paramId aqui
+    const filmeBuscado = filmes.find(item => item.titulo == sessaoBuscada?.filme);
+
+    const atualizarValorTotal = (novoValorIngresso, assento) => {
+        const novosValores = { ...valoresIngressos, [assento]: novoValorIngresso };
+        setValoresIngressos(novosValores);
+
+        const total = Object.values(novosValores).reduce((acc, val) => acc + val, 0);
+        setValorTotal(total);
+    };
 
     function comprarIngresso() {
         // Buscar poltronas bloqueadas
         const poltronasBloqueadas = JSON.parse(localStorage.getItem('poltronas_bloqueadas')) || [];
-    
+
         // Sessão atual
         const sessaoExistente = poltronasBloqueadas.find(sessao => sessao.id === sessaoBuscada.id);
-    
+
         if (sessaoExistente) {
             // Se essa sessão já existe, adicione a ela
             sessaoExistente.poltronas.push(...poltronasPreSelecionadas);
@@ -49,15 +103,10 @@ export default function Page({ params }) {
             });
         }
         localStorage.setItem('poltronas_bloqueadas', JSON.stringify(poltronasBloqueadas));
-    
+
         // Parte para salvar as informações da compra
-        let pagamentos = JSON.parse(localStorage.getItem('pagamentos'));
-    
-        // Verificar se `pagamentos` não é um array e inicializá-lo caso contrário
-        if (!Array.isArray(pagamentos)) {
-            pagamentos = [];
-        }
-    
+        let pagamentos = JSON.parse(localStorage.getItem('pagamentos')) || [];
+
         const novoPagamento = {
             valorTotalCompra: valorTotal,
             filme: filmeBuscado.id,
@@ -74,48 +123,17 @@ export default function Page({ params }) {
             }),
             user: userLogado.email
         };
-    
+
         pagamentos.push(novoPagamento); // Adiciona o pagamento corretamente ao array
         localStorage.setItem('pagamentos', JSON.stringify(pagamentos));
-    
+
         Swal.fire({
             title: "Assento reservado com sucesso!",
             text: "Mais informações foram mandadas para seu email",
             icon: "success"
         });
-    
+
         return route.push('/');
-    }
-
-    const atualizarValorTotal = (novoValorIngresso, assento) => {
-        const novosValores = { ...valoresIngressos, [assento]: novoValorIngresso };
-        setValoresIngressos(novosValores);
-
-        const total = Object.values(novosValores).reduce((acc, val) => acc + val, 0);
-        setValorTotal(total);
-    };
-
-    //Sobre a sessão do meu usuário
-    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
-
-    useEffect(() => {
-        verificarSessao();
-    }, []);
-
-    function verificarSessao() {
-        if (userLogado) {
-            const tempoAtual = new Date().getTime();
-            if (tempoAtual > userLogado.expirationTime) {
-                // Expirou a sessão
-                localStorage.removeItem('sessaoLogin');
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Sessão expirada',
-                    text: 'Por favor, faça login novamente.',
-                });
-                route.push('/users/login');
-            }
-        }
     }
 
     return (
@@ -134,15 +152,15 @@ export default function Page({ params }) {
                         <Card className="mb-3 ">
                             <Row className="p-3">
                                 <Col md={3}>
-                                    <Card.Img src={filmeBuscado.imagem_filme} alt={filmeBuscado.titulo} />
+                                    <Card.Img src={filmeBuscado?.imagem_filme} alt={filmeBuscado?.titulo} />
                                 </Col>
                                 <Col md={9}>
                                     <Card.Body>
-                                        <Card.Title as={'h3'}>{filmeBuscado.titulo}</Card.Title>
+                                        <Card.Title as={'h3'}>{filmeBuscado?.titulo}</Card.Title>
                                         <Card.Text>
-                                            <MdCalendarToday className="text-primary me-1" /> <b>Data:</b> {sessaoBuscada.data_sessao} <br />
-                                            <MdAccessTime className="text-primary me-1" /> <b>Horário:</b> {sessaoBuscada.horario_sessao} <br />
-                                            <GoLocation className="text-primary me-1" /> <b>Sala:</b> {sessaoBuscada.sala}
+                                            <MdCalendarToday className="text-primary me-1" /> <b>Data:</b> {sessaoBuscada?.data_sessao} <br />
+                                            <MdAccessTime className="text-primary me-1" /> <b>Horário:</b> {sessaoBuscada?.horario_sessao} <br />
+                                            <GoLocation className="text-primary me-1" /> <b>Sala:</b> {sessaoBuscada?.sala}
                                         </Card.Text>
                                     </Card.Body>
                                 </Col>
