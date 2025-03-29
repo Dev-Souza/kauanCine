@@ -6,7 +6,7 @@ import { SalasValidator } from "@/app/validators/SalasValidator";
 import { Formik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form, Container, Card } from "react-bootstrap";
 import { FaCheck, FaAngleLeft } from "react-icons/fa";
 import Swal from "sweetalert2";
@@ -14,21 +14,45 @@ import { v4 } from "uuid";
 
 export default function Page({ params }) {
     const route = useRouter();
-    const salas = JSON.parse(localStorage.getItem('salas')) || [];
-    const dados = salas.find(item => item.id == params.id);
-    const sala = dados || { nome: '', tipo_sala: '' };
+    const [sala, setSala] = useState({ nome: '', tipo_sala: '' });
+    const [salas, setSalas] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Desembrulha o 'params' antes de acessar o 'id'
+        const fetchData = async () => {
+            const salasSalvas = JSON.parse(localStorage.getItem('salas')) || [];
+            setSalas(salasSalvas);
+
+            // Espera 'params' ser resolvido antes de usar
+            const { id } = await params;
+
+            if (id) {
+                const dados = salasSalvas.find(item => item.id == id);
+                setSala(dados || { nome: '', tipo_sala: '' });
+            }
+            setLoading(false);
+        };
+        fetchData();
+    }, [params]);
 
     function salvar(dados) {
+        const salasAtualizadas = [...salas];
         if (sala.id) {
-            Object.assign(sala, dados);
-            Swal.fire({
-                title: "Sala alterada com sucesso!",
-                text: "A sala foi alterada no sistema",
-                icon: "success",
-            });
+            // Atualizando a sala existente
+            const salaIndex = salas.findIndex(item => item.id === sala.id);
+            if (salaIndex !== -1) {
+                salasAtualizadas[salaIndex] = dados;
+                Swal.fire({
+                    title: "Sala alterada com sucesso!",
+                    text: "A sala foi alterada no sistema",
+                    icon: "success",
+                });
+            }
         } else {
+            // Adicionando uma nova sala
             dados.id = v4();
-            salas.push(dados);
+            salasAtualizadas.push(dados);
             Swal.fire({
                 title: "Sala cadastrada com sucesso!",
                 text: "A sala foi adicionada ao sistema",
@@ -36,7 +60,8 @@ export default function Page({ params }) {
             });
         }
 
-        localStorage.setItem('salas', JSON.stringify(salas));
+        // Atualizando o localStorage com as salas modificadas
+        localStorage.setItem('salas', JSON.stringify(salasAtualizadas));
         route.push('/admin/sala');
     }
 
@@ -61,6 +86,8 @@ export default function Page({ params }) {
             }
         }
     }
+
+    if (loading) return <p>Loading...</p>;
 
     return (
         <>

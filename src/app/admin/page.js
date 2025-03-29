@@ -6,15 +6,20 @@ import { ImFilm } from "react-icons/im";
 import { MdMeetingRoom } from "react-icons/md";
 import { SiSessionize, SiDatadog } from "react-icons/si";
 import NavBarLogado from "../components/NavBarLogado";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import NavBarHeader from "../components/NavBarHeader";
 
 export default function Page() {
 
-    const userLogado = JSON.parse(localStorage.getItem('sessaoLogin'));
+    const [userLogado, setUserLogado] = useState([]);
 
     useEffect(() => {
-        verificarSessao();
+        if (typeof window !== 'undefined') {
+            // Garantir que estamos no cliente antes de acessar o localStorage
+            const user = JSON.parse(localStorage.getItem('sessaoLogin')) || [];
+            setUserLogado(user);
+            verificarSessao();
+        }
     }, []);
 
     function verificarSessao() {
